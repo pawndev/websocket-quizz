@@ -1,0 +1,31 @@
+{
+  "name": "websocket-quizz",
+  "version": "1.0.0",
+  "description": "Little quizz in nodejs with websocket",
+  "main": "server.js",
+  "scripts": {
+    "test": "node server.js",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lesspion/websocket-quizz.git"
+  },
+  "keywords": [
+    "quizz",
+    "nodejs",
+    "websocket"
+  ],
+  "author": "lesspion, freakdev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Lesspion/websocket-quizz/issues"
+  },
+  "homepage": "https://github.com/Lesspion/websocket-quizz#readme",
+  "dependencies": {
+    "ejs": "^2.3.3",
+    "express": "^4.13.3",
+    "mysql": "^2.9.0",
+    "socket.io": "^1.3.6"
+  }
+}
