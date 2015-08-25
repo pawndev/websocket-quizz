@@ -4,21 +4,14 @@ var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var ent = require('ent');
 var fs = require('fs');
-var jsonfile = require('jsonfile');
 var mysql = require('mysql');
-var sqlInfo;
+var util = require('util');
 
-jsonfile.readFile(__dirname + '/database.json', function (err, obj) {
-    if (err) {
-        console.log(err);
-    } 
-    sqlInfo = obj;
+fs.readFile('database.json', function (err, obj) {
+    if (err) throw err;
+    var connection = mysql.createConnection(JSON.parse(obj));
+    connection.connect();
 });
-
-
-var connection = mysql.createConnection(sqlInfo);
-
-connection.connect();
 
 app.use(express.static(__dirname + "/assets"));
 
