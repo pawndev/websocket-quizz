@@ -7,6 +7,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks("grunt-bower-install-simple");
 
     // Init GRUNT configuraton
@@ -45,8 +46,6 @@ module.exports = function (grunt) {
                         "requireLib": '../../../bower_components/requirejs/require',
                         "text": '../../../bower_components/requirejs-text/text',
                         "domReady": '../../../bower_components/domReady/domReady',
-                        "domManager": '../../../commons/domManager/domManager',
-                        "utils": '../../../commons/utils'
                     },
                 }
             }/*,
@@ -63,8 +62,22 @@ module.exports = function (grunt) {
                         "text": '../../../bower_components/requirejs-text/text'
                     },
                 }
+            }*/
+        },
+        jasmine: {
+            commons: {
+                /*src: ['commons/domManager/*.js'],*/
+                options: {
+                    specs: "tests/specs/**/*.js",
+                    template: require('grunt-template-jasmine-requirejs'),
+                    templateOptions: {
+                        requireConfig: {
+                            baseUrl: './'
+                        }
+                    }
+                }
             }
-*/        },
+        },
         watch: {
             scripts: {
                 files: ['client_mobile/dev/**/*.*'/*, 'client_display/dev/** /*.*'*/],
