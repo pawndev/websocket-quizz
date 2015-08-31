@@ -1,0 +1,10 @@
+{
+    "name": "websocket-quizz",
+    "version": "0.0.1",
+    "dependencies": {
+        "requirejs": "2.1.11",
+        "requirejs-text": "2.0.12",
+        "less.js": "1.7.1",
+        "domReady": "2.0.1"
+    }
+}
