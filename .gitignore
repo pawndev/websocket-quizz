@@ -1,3 +1,6 @@
 node_modules/
 bower_components/
 server/database.json/
+
+client_mobile/prod/app.js
+client_mobile/prod/styles.css
