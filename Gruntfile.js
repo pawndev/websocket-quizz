@@ -66,7 +66,6 @@ module.exports = function (grunt) {
         },
         jasmine: {
             commons: {
-                /*src: ['commons/domManager/*.js'],*/
                 options: {
                     specs: "tests/specs/**/*.js",
                     template: require('grunt-template-jasmine-requirejs'),
