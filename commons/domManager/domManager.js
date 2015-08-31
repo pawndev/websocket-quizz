@@ -1,4 +1,4 @@
-define(['utils'], function (utils) {
+define(['../utils'], function (utils) {
 
     var DomNode = function (node) {
         this._node = node;

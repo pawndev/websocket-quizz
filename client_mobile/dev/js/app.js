@@ -1,4 +1,4 @@
-require(['domReady', 'domManager'], function (domReady, dm) {
+require(['domReady', '../../../commons/domManager/domManager'], function (domReady, dm) {
 
     var domBody,
         PHASE_START = 0

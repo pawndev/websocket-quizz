@@ -31,7 +31,7 @@ pubsub.unsubscribe('fireCallback', id);
 pubsub.publish('fireCallback', {tata: "toto3"});
 
 // mock network call
-var socket = require('../commons/mocks/socket');
+var socket = require('./mocks/socket');
 pubsub.subscribe("fireCallback", callback);
 pubsub.setNetworkInterface(socket);
 socket.emit('message', {type:"fireCallback", tata:"toto4"});
