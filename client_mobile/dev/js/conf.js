@@ -4,8 +4,6 @@
 var require = {
     baseUrl: "../dev/js/",
     paths: {
-        "utils": '../../../commons/utils',
-        "domManager": '../../../commons/domManager/domManager',
         "domReady": '../../../bower_components/domReady/domReady'
 /*        "underscore": '../../bower_components/underscore/underscore',
         "deferred": '../../bower_components/underscore.deferred/underscore.deferred',
