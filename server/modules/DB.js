@@ -19,6 +19,7 @@ var DB = {
 		this.connection.query(SQLquery, function (err, rows) {
 			if (err) throw err;
 			callback.call(this, rows);
+			return rows;
 		});
 	},
 	setStartTime: function () {

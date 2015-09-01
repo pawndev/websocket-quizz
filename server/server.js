@@ -6,12 +6,13 @@ var ent = require('ent');
 var fs = require('fs');
 var mysql = require('mysql');
 var util = require('util');
-
-fs.readFile('database.json', function (err, obj) {
-    if (err) throw err;
-    var connection = mysql.createConnection(JSON.parse(obj));
-    connection.connect();
-});
+var Chrono = require('./modules/Chrono');
+Chrono.launch();
+// fs.readFile('database.json', function (err, obj) {
+//     if (err) throw err;
+//     var connection = mysql.createConnection(JSON.parse(obj));
+//     connection.connect();
+// });
 
 app.use(express.static(__dirname + "/assets"));
 
