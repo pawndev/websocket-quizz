@@ -3,7 +3,7 @@ define(['../utils'], function (utils) {
     var DomNode = function (node) {
         this._node = node;
         this._instructions = [];
-        this._alive = true;
+        this.alive = true;
 
         this._cssClassCache = node.className.split(' ');
     }
@@ -11,13 +11,14 @@ define(['../utils'], function (utils) {
     // reference to "native" dom object
     DomNode.prototype._node = null;
 
+    // for of instructions for a node
+    DomNode.prototype._instructions = [];
+
     // virtual node should be destroyed ?
     DomNode.prototype.alive = false;
 
-    DomNode.prototype._cssClassCache = [];
 
-    // for of instructions for a node
-    DomNode.prototype._instructions = [];
+    DomNode.prototype._cssClassCache = [];
 
     DomNode.prototype._addInstructions = function (type, payload) {
 
@@ -130,7 +131,7 @@ define(['../utils'], function (utils) {
                 }
             }, this);
 
-            forgettableNodes.forEach(function () {
+            forgettableNodes.forEach(function (el, id) {
                 delete domManagerNodes[id];
             });
 
