@@ -7,7 +7,7 @@ var fs = require('fs');
 var mysql = require('mysql');
 var util = require('util');
 var Chrono = require('./modules/Chrono');
-Chrono.launch();
+//Chrono.launch();
 // fs.readFile('database.json', function (err, obj) {
 //     if (err) throw err;
 //     var connection = mysql.createConnection(JSON.parse(obj));

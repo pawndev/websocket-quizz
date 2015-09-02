@@ -19,13 +19,14 @@ var Chrono = {
 	getCurrent: function () {
 		return this.time;
 	},
-	launch: function () {
+	/*launch: function () {
 		child.exec(__filename, function (err, stdout, stderr) {
 			console.log(stdout);
-			console.log(stderr);
 		});
 		console.log('chrono launch');
-	}
+	}*/
+
+	
 };
 
 (function () {
