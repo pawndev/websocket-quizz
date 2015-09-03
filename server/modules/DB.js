@@ -2,6 +2,7 @@ var mysql = require('mysql');
 var fs = require('fs');
 
 var DB = {
+	allQuestion: [],
 	init: function () {
 		var myCo;
 		var data = fs.readFileSync(__dirname + '/../database.json');
@@ -9,7 +10,17 @@ var DB = {
 		myCo.connect();
 		this.connection = myCo;
 	},
-	getQuestion: function (id_question, callback) {
+	getQuestion: function (callback) {
+		var SQLquery = "SELECT id_question, content FROM question WHERE 1 = 1";
+		for (var i = 0; i < this.allQuestion.length; i++) {
+			SQLquery += " AND id_question != " . this.allQuestion[i];
+		}
+		this.connection.quesry(SQLquery, function (err, rows) {
+			if (err) throw err;
+			callback.call(this, rows);
+		});
+	},
+	getQuestions: function (id_question, callback) {
 		if (typeof id_question === "function") {
 			callback = id_question;
 			id_question = null;
