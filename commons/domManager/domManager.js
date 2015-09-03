@@ -54,6 +54,12 @@ define(['../utils'], function (utils) {
                 case 'attr':
                     this._node.setAttribute(instruction.actions.key, instruction.actions.value);
                     break;
+                case 'eventAdd':
+                    this._node.addEventListener(instruction.actions.eventName, instruction.actions.callback);
+                    break;
+                case 'eventRemove':
+                    this._node.removeEventListener(instruction.actions.eventName, instruction.actions.callback);
+                    break;
             }
         }, this);
 
@@ -91,6 +97,14 @@ define(['../utils'], function (utils) {
         return this;
     };
 
+    DomNode.prototype.on = function (event, callback) {
+        this._addInstructions('eventAdd', {eventName: event, callback: callback});
+    };
+
+    DomNode.prototype.off = function (event, callback) {
+        this._addInstructions('eventRemove', {eventName: event, callback: callback});
+    };
+
     DomNode.prototype.addClass = function (value) {
         if (!this.hasClass(value))
             this._cssClassCache.push(value);
@@ -114,7 +128,7 @@ define(['../utils'], function (utils) {
     };
     
     var domManagerNodes = [],
-        KNOWN_INSTRUCTIONS = ['prop', 'attr', 'class']
+        KNOWN_INSTRUCTIONS = ['prop', 'attr', 'class', 'eventAdd', 'eventRemove']
         ;
         
 
