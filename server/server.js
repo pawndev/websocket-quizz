@@ -6,13 +6,12 @@ var ent = require('ent');
 var fs = require('fs');
 var mysql = require('mysql');
 var util = require('util');
-var Chrono = require('./modules/Chrono');
-//Chrono.launch();
-// fs.readFile('database.json', function (err, obj) {
-//     if (err) throw err;
-//     var connection = mysql.createConnection(JSON.parse(obj));
-//     connection.connect();
-// });
+var Stopwatch = require('timer-stopwatch');
+var timer = new Stopwatch(10000);
+timer.start();
+timer.on('time', function (time) {
+	console.log(time.ms);
+});
 
 app.use(express.static(__dirname + "/assets"));
 
