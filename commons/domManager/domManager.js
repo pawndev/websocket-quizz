@@ -72,7 +72,7 @@ define(['../utils'], function (utils) {
                 return instr.actions.value;
             }
         }
-        return undefined;
+        return !!isAttr ? this._node.getAttribute(key) : this._node[key];
     };   
 
     DomNode.prototype.attr = function (attr, value) {
@@ -148,7 +148,7 @@ define(['../utils'], function (utils) {
         },
         queryAll: function (selector) {
             var results = [],
-                nodes = utils.toArray(document.querySelector(selector));
+                nodes = utils.toArray(document.querySelectorAll(selector));
             nodes.forEach(function (node) {
                 results.push(this.query(node));
             });
