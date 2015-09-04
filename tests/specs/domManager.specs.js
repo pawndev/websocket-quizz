@@ -94,5 +94,81 @@ define(['./../../commons/domManager/domManager'], function (dm) {
 
         });
 
+        describe('change the class of a node', function () {
+            beforeEach(function () {
+                domObj = dm.query('body');
+                domObj._node.setAttribute('class', "");
+            });
+
+            describe('adding a class', function () {
+                it('should not add the class right now', function () {
+                    domObj.addClass('test');
+                    expect(domObj._node.getAttribute('class')).not.toEqual('test');
+                });
+
+                it('should add the class after refreshing the dom', function () {
+                    domObj.addClass('test');
+                    domObj.refreshDom();
+                    expect(domObj._node.getAttribute('class')).toEqual('test');
+                });
+
+                it('should not toggle the class right now', function () {
+                    domObj.toggleClass('test');
+                    expect(domObj._node.getAttribute('class')).not.toEqual('test');
+                });
+
+                it('should toogle the class after refreshing the dom', function () {
+                    domObj.toggleClass('test');
+                    domObj.refreshDom();
+                    expect(domObj._node.getAttribute('class')).toEqual('test');
+                });                
+            });
+
+            describe('removing a class', function () {
+
+                beforeEach(function () {
+                    domObj._node.setAttribute('class', 'boulou-boulou')
+                });
+
+                it('should not remove the class right now', function () {
+                    domObj.removeClass('boulou-boulou');
+                    expect(domObj._node.getAttribute('class')).toEqual('boulou-boulou');
+                });
+
+                it('should remove the class after refreshing the dom', function () {
+                    domObj.removeClass('boulou-boulou');
+                    domObj.refreshDom();
+                    expect(domObj._node.getAttribute('class')).toEqual('');
+                });
+
+                it('should not toggle the class right now', function () {
+                    domObj.toggleClass('boulou-boulou');
+                    expect(domObj._node.getAttribute('class')).toEqual('boulou-boulou');
+                });
+
+                it('should toggle the class after refreshing the dom', function () {
+                    domObj.toggleClass('boulou-boulou');
+                    domObj.refreshDom();
+                    expect(domObj._node.getAttribute('class')).toEqual('');
+                });
+
+            });
+
+            describe('contains a class?', function () {
+
+                it('should say no', function () {
+                    expect(domObj.hasClass('test')).toEqual(false);
+                });
+
+                it('should say yes!', function () {
+                    domObj.addClass('test');
+                    domObj.refreshDom();
+                    expect(domObj.hasClass('test')).toEqual(true);
+                });
+
+            });
+
+        });
+
     });
 });
