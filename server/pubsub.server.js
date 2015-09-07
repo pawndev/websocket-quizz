@@ -1,5 +1,5 @@
 var app = require('http').createServer(handler)
-var io = require('socket.io')(app);
+var ioAdapter = require('../commons/pubsub/adapter.socketio');
 var fs = require('fs');
 
 var ps = require('../commons/pubsub/pubsub');
@@ -26,16 +26,26 @@ function handler (req, res) {
   });
 }
 
-ps.setNetworkInterface(io);
+ps.subscribe(ioAdapter.EVENT_READY, function () {
 
-ps.subscribe('DOMREADY', function (data) {
-    console.log('DOMREADY', data);
+  console.log('serveur up and running');
+
+  ps.subscribe('CONNECT', function (data) {
+    console.log(data.from + ' is in da house !');
+  });
+
+  ps.subscribe('DOMREADY', function (data) {
+      console.log('DOMREADY', data);
+  });
+
+  ps.subscribe('GAME_START', function (data) {
+    console.log('GAME START !!!', data);
+    ps.publish('QUESTION_START', {});
+  });
+
 });
 
-ps.subscribe('GAME_START', function (data) {
-  console.log('GAME START !!!', data);
-  ps.publish('QUESTION_START', {});
-});
+ps.setNetworkAdapter(ioAdapter, 666);
 
 // io.on('connection', function (socket) {
 //   socket.on('message', function (data) {
