@@ -7,7 +7,10 @@
 		EVENT_CONNECT: 'CONNECT',
 		setup: function (pubsub, callback) {
 
-	        var socket, that = this;
+	        var socket, that = this,
+            	domain = serverDomain || 'localhost',
+            	port = serverPort || '80';
+
 	        function connectionCallback (clientSocket) {
 	            if (clientSocket !== undefined) {
 		            pubsub.publish(that.EVENT_CONNECT, { from : clientSocket.id }, true);
@@ -32,14 +35,11 @@
 	        }
 
 			if (typeof module === 'object' && module && typeof module.exports !== undefined) {
-				io = socketIO(opt.port);
+				io = socketIO(port);
 	            pubsub.publish(this.EVENT_READY, {}, true);
 	            io.on(onConnectEventName, connectionCallback);
             } else {
-            	var domain = serverDomain || 'localhost',
-            		port = serverPort || '80';
-
-            	socket = io.connect(domain + ':' port);
+            	socket = io.connect(domain + ':' + port);
 	            socket.on(onConnectEventName, connectionCallback);
             }            
 		},
