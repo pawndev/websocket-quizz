@@ -11,11 +11,12 @@ var DB = {
 		this.connection = myCo;
 	},
 	getQuestion: function (callback) {
+		var that = this;
 		var SQLquery = "SELECT id_question, content FROM question WHERE 1 = 1";
 		for (var i = 0; i < this.allQuestion.length; i++) {
 			SQLquery += " AND id_question != " . this.allQuestion[i];
 		}
-		this.connection.quesry(SQLquery, function (err, rows) {
+		that.connection.query(SQLquery, function (err, rows) {
 			if (err) throw err;
 			callback.call(this, rows);
 		});
