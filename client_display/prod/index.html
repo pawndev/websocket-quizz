@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+    <div class="screen wait">
+        <h1>WAIT</h1>
+    </div>
+
+    <div class="screen game-layout">
+        <div class="question"></div>
+        <div class="answers" data-num="1"></div>
+        <div class="answers" data-num="2"></div>
+        <div class="answers" data-num="3"></div>
+        <div class="answers" data-num="4"></div>
+    </div>
+
+    <div class="screen end-layout">
+        End of the game !
+    </div>
+
+    <div class="screen result-layout">
+        Wow you did it well!
+    </div>
+
+
+	<!-- dev files -->
+    <script src="../dev/js/conf.js"></script>
+    <script data-main="app" src="../../bower_components/requirejs/require.js"></script>
+
+    <!-- prod files -->
+    <!-- <script src="js/prod/app.js"></script> -->
+</body>
+</html>

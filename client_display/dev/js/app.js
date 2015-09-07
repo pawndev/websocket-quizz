@@ -1,35 +1,33 @@
-require(['domReady', 'socketio','../../../commons/constants', '../../../commons/domManager/domManager', '../../../commons/pubsub/pubsub'], function (domReady, io, constants, dm, pubsub) {
+require(['domReady', 'socketio', '../../../commons/constants', '../../../commons/domManager/domManager', '../../../commons/pubsub/pubsub'], function (domReady, io, constants, dm, pubsub) {
 
     var domBody,
         listenerId;
 
     domReady(function () {
-        var domButtons;
-
         dm.run();
 
         domBody = dm.query('body');
+        domQuestion = dm.query('.question');
+        domAnswers = dm.queryAll('.answers');
 
         listenerId = pubsub.subscribe(constants.MESSAGE.QUESTION_START, displayGameLayout);
 
-        domButtons = dm.queryAll('button');
-        domButtons.forEach(function (btn) {
-            btn.on('click', onClickButton);
-        });
+        /*domButtons = dm.queryAll('button');*/
 
         domBody.addClass('wait');
         console.log('init');
     });
 
-    function onClickButton(event) {
-        var payload = { response: dm.query(this).attr('data-r') };
-        pubsub.publish('ANSWER_SENT', payload);
-    }
-
     function displayGameLayout(param) {
         pubsub.unsubscribe(constants.MESSAGE.QUESTION_START, listenerId);
         domBody.removeClass('wait');
         domBody.addClass('game-layout');
+        domQuestion.html(param.question);
+
+        domAnswers.forEach(function (domAnswer) {
+            domAnswer.html(param.answers[domAnswer.data('num') - 1]);
+        });
+
         listenerId = pubsub.subscribe(constants.MESSAGE.TIMER_END, endTimer);
     }
 
@@ -45,5 +43,7 @@ require(['domReady', 'socketio','../../../commons/constants', '../../../commons/
         domBody.removeClass('end-layout');
         domBody.addClass('result-layout');
     }
+
+    window.pubsub = pubsub;
 
 });

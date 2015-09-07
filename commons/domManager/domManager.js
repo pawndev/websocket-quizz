@@ -78,7 +78,13 @@ define(['../utils'], function (utils) {
                 return instr.actions.value;
             }
         }
-        return !!isAttr ? this._node.getAttribute(key) : this._node[key];
+
+        if (isAttr) {
+            return this._node.getAttribute(key)
+        } else {
+            return this._node[key];
+        }
+        return undefined;
     };   
 
     DomNode.prototype.attr = function (attr, value) {
@@ -103,6 +109,23 @@ define(['../utils'], function (utils) {
 
     DomNode.prototype.off = function (event, callback) {
         this._addInstructions('eventRemove', {eventName: event, callback: callback});
+    };
+
+    DomNode.prototype.html = function (html) {
+        if (html === undefined) {
+            return this.prop('innerHTML');
+        }
+
+        this._addInstructions('prop', {key: 'innerHTML', value: html});
+        return this;
+    };
+
+    DomNode.prototype.data = function (key, value) {
+        if (arguments.length === 1)
+            return this.getValue('data-' + key, true);
+
+        this._addInstructions('attr', {key: 'data-' + key, value: value});
+        return this;
     };
 
     DomNode.prototype.addClass = function (value) {
@@ -165,7 +188,7 @@ define(['../utils'], function (utils) {
                 nodes = utils.toArray(document.querySelectorAll(selector));
             nodes.forEach(function (node) {
                 results.push(this.query(node));
-            });
+            }, this);
             return results;
         },
         run: function () {
