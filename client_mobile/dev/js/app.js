@@ -1,20 +1,39 @@
-require(['domReady', 'socketio', '../../../commons/domManager/domManager', '../../../commons/pubsub/pubsub'], function (domReady, io, dm, ps) {
+require(['domReady', 'socketio','../../../commons/constants', '../../../commons/domManager/domManager', '../../../commons/pubsub/pubsub'], function (domReady, io, constants, dm, pubsub) {
 
     var domBody,
-        PHASE_START = 0
-        PHASE_WAIT = 1,
-        PHASE_PLAY = 2,
-        PHASE_RESULT = 3,
-        PHASE_LOGOUT = 4,
-        CURRENT_PHASE = PHASE_START/*,
-        domBody = null*/;
+        listenerId;
 
     domReady(function () {
-        console.log(dm.query('body'));
+        dm.run();
+
+        domBody = dm.query('body');
+
+        listenerId = pubsub.subscribe(constants.MESSAGE.QUESTION_START, displayGameLayout);
+
+        domButtons = dm.queryAll('button');
+
+        domBody.addClass('wait');
+        console.log('init');
     });
 
-    function wait(msg) {
+    function displayGameLayout(param) {
+        pubsub.unsubscribe(constants.MESSAGE.QUESTION_START, listenerId);
+        domBody.removeClass('wait');
+        domBody.addClass('game-layout');
+        listenerId = pubsub.subscribe(constants.MESSAGE.TIMER_END, endTimer);
+    }
 
+    function endTimer() {
+        pubsub.unsubscribe(constants.MESSAGE.TIMER_END, listenerId);
+        domBody.removeClass('game-layout');
+        domBody.addClass('end-layout');
+        listenerId = pubsub.subscribe(constants.MESSAGE.RESULT_SENT, displayResult);
+    }
+
+    function displayResult (result) {
+        pubsub.unsubscribe(constants.MESSAGE.RESULT_SENT, listenerId);
+        domBody.removeClass('end-layout');
+        domBody.addClass('result-layout');
     }
 
 });
