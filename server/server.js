@@ -12,7 +12,7 @@ var constants = require('../commons/constants');
 var ioAdapter = require('../commons/pubsub/adapter.socketio');
 var curQuestion;
 var Chrono = require('./modules/Chrono');
-
+var path = require('path');
 DB.init();
 
 // DB.getQuestion(function (raws) {
@@ -25,14 +25,15 @@ DB.init();
 
 Chrono.init(ps, 10000);
 
-app.use(express.static(__dirname + "/../"));
+//app.use(express.static(__dirname ));
+//app.use(express.static(__dirname));
 
 app.get('/display', function (req, res) {
-   	res.sendfile(__dirname + '../client_display/prod/index.html');
+   	res.sendfile(path.resolve(__dirname + '/../client_display/prod/index.html'));
 });
 
 app.get('/mobile', function (req, res) {
-   	res.sendfile(__dirname + '../client_mobile/prod/index.html');
+   	res.sendfile(path.resolve(__dirname + '/../client_mobile/prod/index.html'));
 });
 
 ps.subscribe(ioAdapter.EVENT_READY, function () {
