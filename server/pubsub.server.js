@@ -45,7 +45,8 @@ ps.subscribe(ioAdapter.EVENT_READY, function () {
 
 });
 
-ps.setNetworkAdapter(ioAdapter, 666);
+ioAdapter.setPort(666)
+ps.setNetworkAdapter(ioAdapter);
 
 // io.on('connection', function (socket) {
 //   socket.on('message', function (data) {

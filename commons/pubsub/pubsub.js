@@ -95,14 +95,14 @@
                 delete listeners[message];
             }
         },
-        setNetworkAdapter: function (networkAdapter, port) {
+        setNetworkAdapter: function (networkAdapter) {
             if (netInterface !== null) {
                 removeNetworkListener(netInterface);
             }
 
-            networkAdapter.setup(this, {port: port, callback : function (net) {
+            networkAdapter.setup(this, function (net) {
                 netInterface = net
-            }});
+            });
         },
         setNetworkInterface: function (networkInterface) {
             if (netInterface !== null) {

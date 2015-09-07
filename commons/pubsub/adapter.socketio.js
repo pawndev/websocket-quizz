@@ -1,11 +1,11 @@
 (function () {
 
-	var io, onConnectEventName;
+	var io, onConnectEventName, serverDomain, serverPort;
 
 	var adapter = {
 		EVENT_READY: 'READY',
 		EVENT_CONNECT: 'CONNECT',
-		setup: function (pubsub, opt) {
+		setup: function (pubsub, callback) {
 
 	        var socket, that = this;
 	        function connectionCallback (clientSocket) {
@@ -26,8 +26,8 @@
 	                pubsub.publish(type, payload, true);
 	            });
 
-	            if (typeof opt.callback === 'function') {
-	            	opt.callback.call(this, socket);
+	            if (callback === 'function') {
+	            	callback.call(this, socket);
 	            }
 	        }
 
@@ -36,9 +36,18 @@
 	            pubsub.publish(this.EVENT_READY, {}, true);
 	            io.on(onConnectEventName, connectionCallback);
             } else {
-            	socket = io.connect((opt.server  || 'localhost' ) + ':' + (opt.port || '80'));
+            	var domain = serverDomain || 'localhost',
+            		port = serverPort || '80';
+
+            	socket = io.connect(domain + ':' port);
 	            socket.on(onConnectEventName, connectionCallback);
             }            
+		},
+		setServerUrl: function (domain) {
+			serverDomain = domain;
+		},
+		setPort: function (port) {
+			serverPort = port;
 		}
 	}
 
