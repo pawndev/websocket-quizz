@@ -72,6 +72,11 @@ define(['../utils'], function (utils) {
                 return instr.actions.value;
             }
         }
+        if (isAttr) {
+            return this._node.getAttribute(key)
+        } else {
+            return this._node[key];
+        }
         return undefined;
     };   
 
