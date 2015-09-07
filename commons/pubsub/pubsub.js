@@ -4,13 +4,37 @@
     var listenersAutoIncrement = 0;
     var netInterface = null;
 
-    function addNetworkListener(netInterface) {
+    function addNetworkListener(net) {
         var type;
-        netInterface.on('message', function (payload) {
-            type = payload.type;
-            delete payload.type;
-            pubsub.publish(type, payload, true);
-        });
+        function connectionCallback (clientSocket) {
+            pubsub.publish('CONNECT', {}, true);
+
+            if (clientSocket !== undefined) {
+                socket = clientSocket;
+            } else {
+                socket = net;
+            }
+            socket.on('message', function (payload) {
+                type = payload.type;
+                delete payload.type;
+
+                if (typeof socket.id !== undefined) {
+                    payload.from = socket.id;
+                }
+
+                pubsub.publish(type, payload, true);
+            });
+            if (typeof module === 'object' && module && typeof module.exports !== undefined) {
+                netInterface = net;
+            } else {
+                netInterface = socket;
+            }
+        }
+        if (typeof module === 'object' && module && typeof module.exports !== undefined) {
+            net.on('connection', connectionCallback);
+        } else {
+            net.on('connect', connectionCallback);
+        }
     }
 
     function removeNetworkListener(netInterface) {
@@ -20,6 +44,10 @@
     var pubsub = {
         publish: function (message, payload, noNetForwarding) {
             var listener;
+
+            if (message === undefined || payload === undefined) {
+                throw new Error('missing message or payload');
+            }
 
             // nobody is listening
             if (listeners[message] === null) {
@@ -34,12 +62,13 @@
                     } else {
                         listener.call(this, payload);
                     }
-                    if (netInterface !== null && noNetForwarding !== true) {
-                        payload.type = message;
-                        netInterface.emit('message', payload);
-                    }
                 }
             };
+            if (netInterface !== null && noNetForwarding !== true) {
+                payload.type = message;
+                netInterface.emit('message', payload);
+            }
+
         },
         subscribe: function (message, callback) {
             listenersAutoIncrement++;
