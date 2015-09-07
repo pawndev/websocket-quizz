@@ -14,12 +14,25 @@ var curQuestion;
 var Chrono = require('./modules/Chrono');
 
 DB.init();
+
+// DB.getQuestion(function (raws) {
+// 	console.log('getQuestion : ');
+// 	console.info(raws);
+// });
+
+// DB.
+
+
 Chrono.init(ps, 10000);
 
 app.use(express.static(__dirname + "/../"));
 
-app.get('/', function (req, res) {
-    
+app.get('/display', function (req, res) {
+   	res.sendfile(__dirname + '../client_display/prod/index.html');
+});
+
+app.get('/mobile', function (req, res) {
+   	res.sendfile(__dirname + '../client_mobile/prod/index.html');
 });
 
 ps.subscribe(ioAdapter.EVENT_READY, function () {
