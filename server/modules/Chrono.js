@@ -1,37 +1,40 @@
-var child = require('child_process');
+var Stopwatch = require('timer-stopwatch');
+var constants = require('../../commons/constants');
+
+
 var Chrono = {
-	time: null,
-	set: function (time) {
-		this.time = time;
+	duration: null,
+	timer: new Stopwatch(1),
+	init: function (pubInterface, defaultDuration) {
+		this.setEventInterface(pubInterface);
+
+		this.reset(defaultDuration);
 	},
-	run: function () {
+	setEventInterface: function (ps) {
 		var that = this;
-		setInterval(function () {
-			if (that.time === 0) {
-				//emit end of game;
-				console.log('fin');
-				clearInterval(this);
-			}
-			console.log(that.getCurrent());
-			that.time -= 1000;
-		}, 1000);
-	},
-	getCurrent: function () {
-		return this.time;
-	},
-	/*launch: function () {
-		child.exec(__filename, function (err, stdout, stderr) {
-			console.log(stdout);
+		this.ps = ps;
+		this.timer.on('done', function () {
+			ps.publish(constants.MESSAGE.TIMER_END, {});
 		});
-		console.log('chrono launch');
-	}*/
 
-	
+		ps.subscribe(constants.MESSAGE.QUESTION_START, function () {
+			that.timer.start();
+		});
+	},
+	start: function () {
+		this.timer.start();
+	},
+	stop: function () {
+		this.timer.stop();
+	},
+	reset: function (time) {
+		this.duration = time || null;
+
+		this.timer.reset(this.duration);
+	},
+	getTime: function () {
+		return this.duration - timer.ms;
+	},
 };
-
-(function () {
-	Chrono.set(10000);
-	Chrono.run();
-})();
 
 module.exports = Chrono;
