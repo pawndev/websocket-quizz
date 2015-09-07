@@ -29,7 +29,7 @@ module.exports = function (grunt) {
                 },
                 files: {
                     "client_mobile/prod/styles.css": "client_mobile/dev/less/**/*.less",
-                    "client_display/prod/styles.css": "client_display/prod/less/**/*.less",
+                    "client_display/prod/styles.css": "client_display/dev/less/**/*.less",
                 }
             }
         },
@@ -49,7 +49,7 @@ module.exports = function (grunt) {
                         "socketio": '../../../node_modules/socket.io/node_modules/socket.io-client/socket.io'
                     },
                 }
-            }/*,
+            },
             compile_display: {
                 options: {
                     name: 'app',
@@ -60,10 +60,12 @@ module.exports = function (grunt) {
                     include: ["requireLib"],
                     paths: {
                         "requireLib": '../../../bower_components/requirejs/require',
-                        "text": '../../../bower_components/requirejs-text/text'
+                        "text": '../../../bower_components/requirejs-text/text',
+                        "domReady": '../../../bower_components/domReady/domReady',
+                        "socketio": '../../../node_modules/socket.io/node_modules/socket.io-client/socket.io'
                     },
                 }
-            }*/
+            }
         },
         jasmine: {
             commons: {
