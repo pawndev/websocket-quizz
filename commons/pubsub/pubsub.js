@@ -96,13 +96,14 @@
                 delete listeners[message];
             }
         },
-        setNetworkInterface: function (networkInterface) {
+        setNetworkAdapter: function (networkAdapter, port) {
             if (netInterface !== null) {
                 removeNetworkListener(netInterface);
             }
-            netInterface = networkInterface;
-            
-            addNetworkListener(netInterface);
+
+            networkAdapter.setup(this, {port: port, callback : function (net) {
+                netInterface = net
+            }});
         }
     }
 
