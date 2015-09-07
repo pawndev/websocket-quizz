@@ -3,7 +3,7 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
     var domBody,
         listenerId;
 
-    io.setPort(666);
+    io.setPort(8000);
     ps.setNetworkAdapter(io);
 
     domReady(function () {

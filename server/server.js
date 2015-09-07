@@ -9,6 +9,8 @@ var util = require('util');
 var DB = require('./modules/DB');
 var ps = require('./../commons/pubsub/pubsub.js');
 var Stopwatch = require('timer-stopwatch');
+var constants = require('../commons/constants');
+var ioAdapter = require('../commons/pubsub/adapter.socketio');
 var questionTime = 10000;
 var curQuestion;
 var timer = new Stopwatch(questionTime);
@@ -22,7 +24,7 @@ timer.on('time', function (time) {
 		DB.addResponse(1, curQuestion, questionTime, "", "player", function () {
 			console.log('out of time');
 			DB.getGivenResponses(function (rows) {
-				ps.publish('RESULT_SENT', {rows: rows});
+				ps.publish(constants.MESSAGE.RESULT_SENT, {rows: rows});
 			});
 		});
 	}
@@ -34,24 +36,21 @@ app.get('/', function (req, res) {
     
 });
 
-ps.setNetworkInterface(io);
-
 ps.publish('CONNECT', {});
 
 ps.subscribe('DOMREADY', function () {
 	console.log('the dom is ready');
 });
 
-ps.subscribe('GAME_START', function () {
+ps.subscribe(constants.MESSAGE.GAME_START, function () {
 	DB.getQuestion(function (rows) {
-		ps.publish('QUESTION_START', {question: rows[0].content});
+		ps.publish(constants.MESSAGE.QUESTION_START, {question: rows[0].content});
 		curQuestion = rows[0].id_question;
 		timer.start();
 	});
 });
 
-ps.subscribe('ANSWER_SENT', function (res) {
-	timer.stop();
+ps.subscribe(constants.MESSAGE.ANSWER_SENT, function (res) {
 	var past = curTime;
 	var ourTime = questionTime - curTime;
 	DB.addResponse(1, curQuestion, ourTime, res.res, "player", function () {
@@ -60,6 +59,8 @@ ps.subscribe('ANSWER_SENT', function (res) {
 	});
 });
 
+ioAdapter.setPort(8000);
+ps.setNetworkAdapter(ioAdapter);
 
 server.listen(8080);
 console.log('running on port : 8080');
