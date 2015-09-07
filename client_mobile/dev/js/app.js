@@ -1,4 +1,4 @@
-require(['domReady', '../../../commons/domManager/domManager'], function (domReady, dm) {
+require(['domReady', 'socketio', '../../../commons/domManager/domManager', '../../../commons/pubsub/pubsub'], function (domReady, io, dm, ps) {
 
     var domBody,
         PHASE_START = 0

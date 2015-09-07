@@ -4,7 +4,8 @@
 var require = {
     baseUrl: "../dev/js/",
     paths: {
-        "domReady": '../../../bower_components/domReady/domReady'
+        "domReady": '../../../bower_components/domReady/domReady',
+        "socketio": '../../../node_modules/socket.io/node_modules/socket.io-client/socket.io'
 /*        "underscore": '../../bower_components/underscore/underscore',
         "deferred": '../../bower_components/underscore.deferred/underscore.deferred',
         "text": '../../bower_components/requirejs-text/text',

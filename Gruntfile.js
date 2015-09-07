@@ -46,6 +46,7 @@ module.exports = function (grunt) {
                         "requireLib": '../../../bower_components/requirejs/require',
                         "text": '../../../bower_components/requirejs-text/text',
                         "domReady": '../../../bower_components/domReady/domReady',
+                        "socketio": '../../../node_modules/socket.io/node_modules/socket.io-client/socket.io'
                     },
                 }
             }/*,
