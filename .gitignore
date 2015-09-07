@@ -4,3 +4,6 @@ server/database.json/
 
 client_mobile/prod/app.js
 client_mobile/prod/styles.css
+
+client_display/prod/app.js
+client_display/prod/styles.css
