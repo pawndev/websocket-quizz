@@ -1,22 +1,20 @@
-require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commons/constants', '../../../commons/domManager/domManager', '../../../commons/pubsub/pubsub'], function (domReady, io, constants, dm, ps) {
+require(['domReady', 'socketio', '../../../commons/constants', '../../../commons/domManager/domManager', '../../../commons/pubsub/pubsub'], function (domReady, io, constants, dm, pubsub) {
 
     var domBody,
         listenerId;
-
-    ps.setNetworkAdapter(io, 666);
 
     domReady(function () {
         dm.run();
 
         domBody = dm.query('body');
-        domButtons = dm.queryAll('button');
+        domQuestion = dm.query('.question');
+        domAnswers = dm.queryAll('.answers');
+
+        listenerId = pubsub.subscribe(constants.MESSAGE.QUESTION_START, displayGameLayout);
+
+        /*domButtons = dm.queryAll('button');*/
+
         domBody.addClass('wait');
-
-        ps.subscribe(io.EVENT_READY, function () {
-            console.log('connected to server');
-            listenerId = pubsub.subscribe(constants.MESSAGE.QUESTION_START, displayGameLayout);
-        });
-
         console.log('init');
     });
 
@@ -24,6 +22,12 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
         pubsub.unsubscribe(constants.MESSAGE.QUESTION_START, listenerId);
         domBody.removeClass('wait');
         domBody.addClass('game-layout');
+        domQuestion.html(param.question);
+
+        domAnswers.forEach(function (domAnswer) {
+            domAnswer.html(param.answers[domAnswer.data('num') - 1]);
+        });
+
         listenerId = pubsub.subscribe(constants.MESSAGE.TIMER_END, endTimer);
     }
 
@@ -40,6 +44,6 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
         domBody.addClass('result-layout');
     }
 
-    window.pubsub = ps;
+    window.pubsub = pubsub;
 
 });
