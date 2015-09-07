@@ -50,20 +50,19 @@
             }
 
             // nobody is listening
-            if (listeners[message] === null) {
-                return;
+            if (listeners[message] !== null) {
+                for (var listenerIndex in listeners[message]) {
+                    if (listeners[message].hasOwnProperty(listenerIndex)) {
+                        listener = listeners[message][listenerIndex];
+                        if (Array.isArray(listener)) {
+                            listener[0].call(listener[1], payload);
+                        } else {
+                            listener.call(this, payload);
+                        }
+                    }
+                };                
             }
 
-            for (var listenerIndex in listeners[message]) {
-                if (listeners[message].hasOwnProperty(listenerIndex)) {
-                    listener = listeners[message][listenerIndex];
-                    if (Array.isArray(listener)) {
-                        listener[0].call(listener[1], payload);
-                    } else {
-                        listener.call(this, payload);
-                    }
-                }
-            };
             if (netInterface !== null && noNetForwarding !== true) {
                 payload.type = message;
                 netInterface.emit('message', payload);
@@ -104,7 +103,15 @@
             networkAdapter.setup(this, {port: port, callback : function (net) {
                 netInterface = net
             }});
-        }
+        },
+        setNetworkInterface: function (networkInterface) {
+            if (netInterface !== null) {
+                removeNetworkListener(netInterface);
+            }
+            netInterface = networkInterface;
+            
+            addNetworkListener(netInterface);
+        }        
     }
 
     if (typeof module === "object" && module && typeof module.exports === "object") {
