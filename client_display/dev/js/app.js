@@ -1,4 +1,4 @@
-require(['domReady', 'socketio','../../../commons/constants', '../../../commons/domManager/domManager', '../../../commons/pubsub/pubsub'], function (domReady, io, constants, dm, pubsub) {
+require(['domReady', 'socketio', '../../../commons/constants', '../../../commons/domManager/domManager', '../../../commons/pubsub/pubsub'], function (domReady, io, constants, dm, pubsub) {
 
     var domBody,
         listenerId;
@@ -7,10 +7,12 @@ require(['domReady', 'socketio','../../../commons/constants', '../../../commons/
         dm.run();
 
         domBody = dm.query('body');
+        domQuestion = dm.query('.question');
+        domAnswers = dm.queryAll('.answers');
 
         listenerId = pubsub.subscribe(constants.MESSAGE.QUESTION_START, displayGameLayout);
 
-        domButtons = dm.queryAll('button');
+        /*domButtons = dm.queryAll('button');*/
 
         domBody.addClass('wait');
         console.log('init');
@@ -20,6 +22,12 @@ require(['domReady', 'socketio','../../../commons/constants', '../../../commons/
         pubsub.unsubscribe(constants.MESSAGE.QUESTION_START, listenerId);
         domBody.removeClass('wait');
         domBody.addClass('game-layout');
+        domQuestion.html(param.question);
+
+        domAnswers.forEach(function (domAnswer) {
+            domAnswer.html(param.answers[domAnswer.data('num') - 1]);
+        });
+
         listenerId = pubsub.subscribe(constants.MESSAGE.TIMER_END, endTimer);
     }
 
@@ -35,5 +43,7 @@ require(['domReady', 'socketio','../../../commons/constants', '../../../commons/
         domBody.removeClass('end-layout');
         domBody.addClass('result-layout');
     }
+
+    window.pubsub = pubsub;
 
 });

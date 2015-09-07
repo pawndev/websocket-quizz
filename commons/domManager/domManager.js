@@ -72,6 +72,11 @@ define(['../utils'], function (utils) {
                 return instr.actions.value;
             }
         }
+        if (isAttr) {
+            return this._node.getAttribute(key)
+        } else {
+            return this._node[key];
+        }
         return undefined;
     };   
 
@@ -88,6 +93,23 @@ define(['../utils'], function (utils) {
             return this.getValue(prop);
 
         this._addInstructions('prop', {key: prop, value: value});
+        return this;
+    };
+
+    DomNode.prototype.html = function (html) {
+        if (html === undefined) {
+            return this.prop('innerHTML');
+        }
+
+        this._addInstructions('prop', {key: 'innerHTML', value: html});
+        return this;
+    };
+
+    DomNode.prototype.data = function (key, value) {
+        if (arguments.length === 1)
+            return this.getValue('data-' + key, true);
+
+        this._addInstructions('attr', {key: 'data-' + key, value: value});
         return this;
     };
 
@@ -148,10 +170,10 @@ define(['../utils'], function (utils) {
         },
         queryAll: function (selector) {
             var results = [],
-                nodes = utils.toArray(document.querySelector(selector));
+                nodes = utils.toArray(document.querySelectorAll(selector));
             nodes.forEach(function (node) {
                 results.push(this.query(node));
-            });
+            }, this);
             return results;
         },
         run: function () {
