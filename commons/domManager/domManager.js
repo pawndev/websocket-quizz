@@ -168,7 +168,7 @@ define(['../utils'], function (utils) {
                 nodes = utils.toArray(document.querySelectorAll(selector));
             nodes.forEach(function (node) {
                 results.push(this.query(node));
-            });
+            }, this);
             return results;
         },
         run: function () {
