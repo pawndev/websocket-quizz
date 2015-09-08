@@ -31,7 +31,7 @@ DB.init();
 // });
 
 
-Chrono.init(ps, 10000);
+Chrono.init(ps, 5000);
 
 //app.use(express.static(__dirname ));
 app.use(express.static(__dirname + "/../"));

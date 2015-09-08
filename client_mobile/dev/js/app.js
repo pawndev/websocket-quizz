@@ -4,6 +4,7 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
         listenerId;
 
     io.setPort(8000);
+    io.setServerUrl(document.location.hostname);
     ps.setNetworkAdapter(io);
 
     domReady(function () {
@@ -12,7 +13,10 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
         dm.run();
 
         domBody = dm.query('body');
-        domButtons = dm.queryAll('button');
+
+        domStartButton = dm.query('.start');
+
+        domButtons = dm.queryAll('.answer');
         domButtons.forEach(function (btn) {
             btn.on('click', onClickButton);
         });
@@ -21,6 +25,12 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
 
         ps.subscribe(io.EVENT_READY, function () {
             console.log('connected to server');
+
+            domStartButton.on('click', function () {
+                pubsub.publish(constants.MESSAGE.GAME_START, {});
+            });
+            domStartButton.toggleClass('hidden');
+
             listenerId = pubsub.subscribe(constants.MESSAGE.QUESTION_START, displayGameLayout);
         });
 
@@ -28,8 +38,11 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
     });
 
     function onClickButton(event) {
-        var payload = { response: dm.query(this).data('r') };
+        var payload = { response: dm.query(this).data('r') };        
         pubsub.publish('ANSWER_SENT', payload);
+        domBody.removeClass('game-layout');
+        domStartButton.addClass('hidden');
+        domBody.addClass('wait');
     }
 
     function displayGameLayout(param) {
@@ -42,12 +55,15 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
     function endTimer() {
         pubsub.unsubscribe(constants.MESSAGE.TIMER_END, listenerId);
         domBody.removeClass('game-layout');
+        domBody.removeClass('wait');
+
         domBody.addClass('end-layout');
         listenerId = pubsub.subscribe(constants.MESSAGE.RESULT_SENT, displayResult);
     }
 
     function displayResult (result) {
         pubsub.unsubscribe(constants.MESSAGE.RESULT_SENT, listenerId);
+
         domBody.removeClass('end-layout');
         domBody.addClass('result-layout');
     }

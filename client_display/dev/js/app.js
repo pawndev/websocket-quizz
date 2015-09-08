@@ -43,6 +43,10 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
 
     function displayResult (result) {
         pubsub.unsubscribe(constants.MESSAGE.RESULT_SENT, listenerId);
+        var domScreen = dm.query('.screen.result-layout');
+
+        domScreen.html(JSON.stringify(result));
+
         domBody.removeClass('end-layout');
         domBody.addClass('result-layout');
     }
