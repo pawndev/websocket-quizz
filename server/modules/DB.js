@@ -47,14 +47,14 @@ var DB = {
 			var correctRes = questionRes[0]['res' + questionRes[0].goodRes];
 			var data = {
 				id_session: session,
-				id_question: id_question,
+				id_question: parseInt(id_question),
 				time: time,
-				resSent: response,
+				resSent: parseInt(response),
 				user: user,
-				score: score
+				score: parseInt(score)
 			};
 			that.connection.query("INSERT INTO session SET ?", data, function (err, result) {
-				if (err) throw err;
+				if (err) console.log(this.sql);
 				callback(that);
 			});
 			//callback.call(this, questionRes);
