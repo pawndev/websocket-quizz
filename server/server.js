@@ -49,8 +49,8 @@ ps.subscribe(ioAdapter.EVENT_READY, function () {
 	});
 
 	ps.subscribe(constants.MESSAGE.ANSWER_SENT, function (res) {
-		var ourTime = Chrono.questionTime - Chrono.getTime();
-		DB.addResponse(1, curQuestion, ourTime, res.res, "player", function () {
+		var ourTime = Chrono.getTime();
+		DB.addResponse(1, curQuestion, ourTime.toString(), res.response, "player", function () {
 			console.log('try to insert in bdd');
 			console.log(ourTime);
 		});
