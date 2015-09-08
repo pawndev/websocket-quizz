@@ -49,6 +49,12 @@
                 throw new Error('missing message or payload');
             }
 
+            if (netInterface !== null && noNetForwarding !== true) {
+                payload.type = message;
+                console.log('emit', payload);
+                netInterface.emit('message', payload);
+            }
+
             // nobody is listening
             if (listeners[message] !== null) {
                 for (var listenerIndex in listeners[message]) {
@@ -62,12 +68,6 @@
                     }
                 };                
             }
-
-            if (netInterface !== null && noNetForwarding !== true) {
-                payload.type = message;
-                netInterface.emit('message', payload);
-            }
-
         },
         subscribe: function (message, callback) {
             listenersAutoIncrement++;
