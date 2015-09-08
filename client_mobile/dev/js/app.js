@@ -8,36 +8,49 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
     ps.setNetworkAdapter(io);
 
     domReady(function () {
-        var domButtons;
+        var domButtons, domStartButton, domNickname, domReadyBtn;
 
         dm.run();
 
         domBody = dm.query('body');
-
         domStartButton = dm.query('.start');
-
+        domNickname = dm.query('input[name=nickname]');
+        domReadyBtn = dm.query('.reday')
         domButtons = dm.queryAll('.answer');
-        domButtons.forEach(function (btn) {
-            btn.on('click', onClickButton);
-        });
 
         domBody.addClass('wait');
+
+        domButtons.forEach(function (btn) {
+            btn.on('click', clickAnswerButton);
+        });
+
+        domStartButton.on('click', register);
+
+        domReadyBtn.on('click', startGame);
 
         ps.subscribe(io.EVENT_READY, function () {
             console.log('connected to server');
 
-            domStartButton.on('click', function () {
-                pubsub.publish(constants.MESSAGE.GAME_START, {});
-            });
-            domStartButton.toggleClass('hidden');
-
-            listenerId = pubsub.subscribe(constants.MESSAGE.QUESTION_START, displayGameLayout);
+            domBody.addClass('connected');
+            domBody.removeClass('wait');
         });
 
         console.log('init');
     });
 
-    function onClickButton(event) {
+    function register () {
+        listenerId = pubsub.subscribe(constants.MESSAGE.PLAYER_REGISTERED, displayBePrepared);
+        domBody.addClass('wait');
+        pubsub.publish(constants.MESSAGE.NEW_PLAYER, { nickname: domNickname.prop('value') });
+    });
+
+    function startGame () {
+        listenerId = pubsub.subscribe(constants.MESSAGE.QUESTION_START, displayGameLayout);
+        domBody.addClass('wait');
+        pubsub.publish(constants.MESSAGE.GAME_START, {});
+    }
+
+    function clickAnswerButton(event) {
         var payload = { response: dm.query(this).data('r') };        
         pubsub.publish('ANSWER_SENT', payload);
         domBody.removeClass('game-layout');
@@ -45,7 +58,17 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
         domBody.addClass('wait');
     }
 
-    function displayGameLayout(param) {
+    function displayBePrepared () {
+        if (listenerId !== null) {
+            pubsub.unsubscribe(constants.MESSAGE.PLAYER_REGISTERED, listenerId);
+            domBody.removeClass('result-layout');
+        } else {
+            domBody.removeClass('wait');
+        }
+        domBody.addClass('be-prepared');
+    }
+
+    function displayGameLayout (param) {
         pubsub.unsubscribe(constants.MESSAGE.QUESTION_START, listenerId);
         domBody.removeClass('wait');
         domBody.addClass('game-layout');
@@ -66,6 +89,11 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
 
         domBody.removeClass('end-layout');
         domBody.addClass('result-layout');
+
+        setTimeout(function () {
+            listenerId = null;
+            displayBePrepared();
+        }, 5000);
     }
 
     window.pubsub = ps;
