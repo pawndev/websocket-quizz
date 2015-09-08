@@ -7,10 +7,16 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
     ps.setNetworkAdapter(io);
 
     domReady(function () {
+        var domButtons;
+
         dm.run();
 
         domBody = dm.query('body');
         domButtons = dm.queryAll('button');
+        domButtons.forEach(function (btn) {
+            btn.on('click', onClickButton);
+        });
+
         domBody.addClass('wait');
 
         ps.subscribe(io.EVENT_READY, function () {
@@ -20,6 +26,11 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
 
         console.log('init');
     });
+
+    function onClickButton(event) {
+        var payload = { response: dm.query(this).data('r') };
+        pubsub.publish('ANSWER_SENT', payload);
+    }
 
     function displayGameLayout(param) {
         pubsub.unsubscribe(constants.MESSAGE.QUESTION_START, listenerId);
