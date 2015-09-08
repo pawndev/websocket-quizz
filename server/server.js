@@ -37,23 +37,16 @@ Chrono.init(ps, 10000);
 app.use(express.static(__dirname + "/../"));
 
 
+ps.subscribe(ioAdapter.EVENT_READY, function () {
 
-ps.subscribe(constants.MESSAGE.GAME_START, function () {
+	ps.subscribe(constants.MESSAGE.GAME_START, function () {
 		DB.getQuestion(function (rows) {
 			ps.publish(constants.MESSAGE.QUESTION_START, {question: rows[0].content, answers: [rows[0].res1, rows[0].res2, rows[0].res3, rows[0].res4]});
 			curQuestion = rows[0].id_question;
+			Chrono.reset(Chrono.duration);
 			Chrono.start();
 		});
 	});
-
-ps.subscribe(ioAdapter.EVENT_READY, function () {
-	ps.publish('CONNECT', {});
-
-	ps.subscribe('DOMREADY', function () {
-		console.log('the dom is ready');
-	});
-
-
 
 	ps.subscribe(constants.MESSAGE.ANSWER_SENT, function (res) {
 		var ourTime = Chrono.questionTime - Chrono.getTime();
