@@ -33,7 +33,7 @@ var Chrono = {
 		this.timer.reset(this.duration);
 	},
 	getTime: function () {
-		return this.duration - timer.ms;
+		return this.duration - this.timer.ms;
 	},
 };
 
