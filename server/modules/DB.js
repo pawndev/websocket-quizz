@@ -78,7 +78,7 @@ var DB = {
 		if (typeof user === 'function') {
 			callback = user;
 			user = null;
-			var SQLquery = "SELECT user, id_question, resSent FROM session";
+			var SQLquery = "SELECT user, id_question, resSent, score FROM session";
 			SQLquery += user !== null ? " WHERE user LIKE '%" + user + "%'" : "";
 			this.connection.query(SQLquery, function (err, rows) {
 				if (err) throw err;
@@ -91,6 +91,13 @@ var DB = {
 				});
 			});
 		}
+	},
+	getScore: function (user, callback) {
+		if (typeof user === "function") {
+			callback = user;
+			user = null;
+		}
+		var SQLquery = "SELECT user, score FROM session ";
 	}
 };
 

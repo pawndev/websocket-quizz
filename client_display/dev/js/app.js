@@ -1,7 +1,10 @@
-require(['domReady', 'socketio', '../../../commons/constants', '../../../commons/domManager/domManager', '../../../commons/pubsub/pubsub'], function (domReady, io, constants, dm, pubsub) {
+require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commons/constants', '../../../commons/domManager/domManager', '../../../commons/pubsub/pubsub'], function (domReady, io, constants, dm, pubsub) {
 
     var domBody,
         listenerId;
+
+    io.setPort(8000);
+    pubsub.setNetworkAdapter(io);
 
     domReady(function () {
         dm.run();
