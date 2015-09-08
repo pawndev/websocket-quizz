@@ -18,22 +18,30 @@ DB.init();
 // DB.getQuestion(function (raws) {
 // 	console.log('getQuestion : ');
 // 	console.info(raws);
+// 	DB.getResponses(raws[0].id_question, function (rows) {
+// 		console.log('getResponses : ');
+// 		console.log(rows);
+// 	});
 // });
 
-// DB.
+// DB.getGivenResponses(function (rows) {
+// 	console.log('getGivenResponses : ');
+// 	console.log(rows);
+// });
 
 
 Chrono.init(ps, 10000);
 
 //app.use(express.static(__dirname ));
-//app.use(express.static(__dirname));
+app.use(express.static(__dirname + "/../"));
 
-app.get('/display', function (req, res) {
-   	res.sendfile(path.resolve(__dirname + '/../client_display/prod/index.html'));
+app.get('/display/:file', function (req, res) {
+   	res.readFile(path.resolve(__dirname + '/../client_display/prod/' + req.params.file));
 });
 
-app.get('/mobile', function (req, res) {
-   	res.sendfile(path.resolve(__dirname + '/../client_mobile/prod/index.html'));
+app.get('/mobile/:file', function (req, res) {
+   	fs.readFile(__dirname + '/../client_mobile/prod/' + req.params.file);
+   	//res.sendfile(path.resolve(__dirname + '/../client_mobile/prod/' + req.params.file));
 });
 
 ps.subscribe(ioAdapter.EVENT_READY, function () {
