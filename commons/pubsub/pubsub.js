@@ -4,43 +4,6 @@
     var listenersAutoIncrement = 0;
     var netInterface = null;
 
-    function addNetworkListener(net) {
-        var type;
-        function connectionCallback (clientSocket) {
-            pubsub.publish('CONNECT', {}, true);
-
-            if (clientSocket !== undefined) {
-                socket = clientSocket;
-            } else {
-                socket = net;
-            }
-            socket.on('message', function (payload) {
-                type = payload.type;
-                delete payload.type;
-
-                if (typeof socket.id !== undefined) {
-                    payload.from = socket.id;
-                }
-
-                pubsub.publish(type, payload, true);
-            });
-            if (typeof module === 'object' && module && typeof module.exports !== undefined) {
-                netInterface = net;
-            } else {
-                netInterface = socket;
-            }
-        }
-        if (typeof module === 'object' && module && typeof module.exports !== undefined) {
-            net.on('connection', connectionCallback);
-        } else {
-            net.on('connect', connectionCallback);
-        }
-    }
-
-    function removeNetworkListener(netInterface) {
-
-    }
-
     var pubsub = {
         publish: function (message, payload, noNetForwarding) {
             var listener;
@@ -108,20 +71,12 @@
         },
         setNetworkAdapter: function (networkAdapter) {
             if (netInterface !== null) {
-                removeNetworkListener(netInterface);
+                // clean old one
             }
 
             networkAdapter.setup(this, function (net) {
                 netInterface = net
             });
-        },
-        setNetworkInterface: function (networkInterface) {
-            if (netInterface !== null) {
-                removeNetworkListener(netInterface);
-            }
-            netInterface = networkInterface;
-            
-            addNetworkListener(netInterface);
         }
     }
 

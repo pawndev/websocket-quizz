@@ -17,7 +17,6 @@
 	            if (clientSocket !== undefined) {
 		            pubsub.publish(that.EVENT_CONNECT, { from : clientSocket.id }, true);
 	                socket = clientSocket;
-                    console.log('emit __id__ ' + clientSocket.id);
                     clientSocket.emit('___id___', {id: clientSocket.id});
 	            } else {
                     sid = socket.id;
