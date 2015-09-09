@@ -25,7 +25,7 @@ DB.init();
 // 	});
 // });
 
-// DB.getGivenResponses(function (rows) {
+// DB.getGivenResponsesnses(function (rows) {
 // 	console.log('getGivenResponses : ');
 // 	console.log(rows);
 // });
