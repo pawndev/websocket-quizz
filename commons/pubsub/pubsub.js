@@ -95,6 +95,17 @@
                 delete listeners[message];
             }
         },
+        ping: function (message, payload, callback) {
+            this.subscribe('PONG_' + message, callback);
+            this.publish(message, payload);
+        },
+        pong: function (message, onPing) {
+            var that = this;
+            this.subscribe(message, function () {
+                var payload = onPing();
+                this.publish('PONG_' + message, payload);
+            });
+        },
         setNetworkAdapter: function (networkAdapter) {
             if (netInterface !== null) {
                 removeNetworkListener(netInterface);
