@@ -12,12 +12,15 @@ var DB = {
 	},
 	getQuestion: function (callback) {
 		var that = this;
+		var notIn = "0";
 		var SQLquery = "SELECT id_question, content, res1, res2, res3, res4 FROM question WHERE 1 = 1";
 		for (var i = 0; i < this.allQuestion.length; i++) {
-			SQLquery += " AND id_question != " . this.allQuestion[i];
+			notIn += ", " + this.allQuestion[i];
 		}
-		that.connection.query(SQLquery, function (err, rows) {
+		SQLquery += " AND id_question NOT IN (" + notIn + ")";
+		this.connection.query(SQLquery, function (err, rows) {
 			if (err) throw err;
+			that.allQuestion.push(rows[0].id_question);
 			callback.call(this, rows);
 		});
 	},
@@ -54,7 +57,7 @@ var DB = {
 				score: parseInt(score)
 			};
 			that.connection.query("INSERT INTO session SET ?", data, function (err, result) {
-				if (err) console.log(this.sql);
+				if (err) throw err;
 				callback(that);
 			});
 			//callback.call(this, questionRes);

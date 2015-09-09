@@ -12,24 +12,30 @@
             	port = serverPort || '80';
 
 	        function connectionCallback (clientSocket) {
+                var sid;
+
 	            if (clientSocket !== undefined) {
 		            pubsub.publish(that.EVENT_CONNECT, { from : clientSocket.id }, true);
 	                socket = clientSocket;
+                    console.log('emit __id__ ' + clientSocket.id);
+                    clientSocket.emit('___id___', {id: clientSocket.id});
 	            } else {
+                    sid = socket.id;
 		            if (typeof callback === 'function') {
 		            	callback.call(this, socket);
-		            }	            	
+		            }
 	            	pubsub.publish(that.EVENT_READY, {}, true);
 	            }
 	            socket.on('message', function (payload) {
 	                type = payload.type;
 	                delete payload.type;
 
-	                if (typeof socket.id !== undefined) {
-	                    payload.from = socket.id;
+	                if (clientSocket !== undefined ) {
+	                    payload.from = clientSocket.id;
 	                }
-
-	                pubsub.publish(type, payload, true);
+                    if (payload.to === undefined || (sid !== undefined && payload.to === sid)) {
+	                   pubsub.publish(type, payload, true);
+                    }
 	            });
 	        }
 
