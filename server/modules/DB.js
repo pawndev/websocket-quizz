@@ -101,6 +101,12 @@ var DB = {
 			user = null;
 		}
 		var SQLquery = "SELECT user, score FROM session ";
+	},
+	getQuestionNumber: function (callback) {
+		var that = this;
+		this.connection.query('SELECT content FROM question', function (err, rows) {
+			callback.call(that, rows.length);
+		});
 	}
 };
 

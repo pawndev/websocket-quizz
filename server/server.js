@@ -15,6 +15,8 @@ var Chrono = require('./modules/Chrono');
 var path = require('path');
 var route = require('./../route')(app);
 var players = [];
+var count = 0;
+var questionNumber = 0;
 DB.init();
 
 // DB.getQuestion(function (raws) {
@@ -39,6 +41,11 @@ app.use(express.static(__dirname + "/../"));
 
 
 ps.subscribe(ioAdapter.EVENT_READY, function () {
+	DB.getQuestionNumber(function (nbr) {
+		questionNumber = nbr;
+		console.log('There are ' + nbr + ' questions');
+	});
+
 	ps.subscribe('PING', function (data) {
 		console.log('fom : ' + data.from);
 		ps.publish('PING_BACK', {to:data.from});
@@ -54,12 +61,18 @@ ps.subscribe(ioAdapter.EVENT_READY, function () {
 	});
 
 	ps.subscribe(constants.MESSAGE.GAME_START, function () {
-		DB.getQuestion(function (rows) {
-			ps.publish(constants.MESSAGE.QUESTION_START, {question: rows[0].content, answers: [rows[0].res1, rows[0].res2, rows[0].res3, rows[0].res4]});
-			curQuestion = rows[0].id_question;
-			Chrono.reset(Chrono.duration);
-			Chrono.start();
-		});
+		count++;
+		if (count <= questionNumber) {
+			DB.getQuestion(function (rows) {
+				ps.publish(constants.MESSAGE.QUESTION_START, {question: rows[0].content, answers: [rows[0].res1, rows[0].res2, rows[0].res3, rows[0].res4]});
+				curQuestion = rows[0].id_question;
+				Chrono.reset(Chrono.duration);
+				Chrono.start();
+			});
+		} else {
+			console.log('Qu\'est ce qu\'on fait quand on a fini ?');
+			//définir un event de fin de jeu
+		}
 	});
 
 	ps.subscribe(constants.MESSAGE.ANSWER_SENT, function (res) {
