@@ -58,7 +58,7 @@ var DB = {
 			};
 			that.connection.query("INSERT INTO session SET ?", data, function (err, result) {
 				if (err) throw err;
-				callback(that, score);
+				callback.call(that, score);
 			});
 			//callback.call(this, questionRes);
 		});

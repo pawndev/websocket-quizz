@@ -6,9 +6,8 @@ var Chrono = {
 	duration: null,
 	timer: new Stopwatch(1),
 	init: function (pubInterface, defaultDuration) {
+		this.duration = defaultDuration;
 		this.setEventInterface(pubInterface);
-
-		this.reset(defaultDuration);
 	},
 	setEventInterface: function (ps) {
 		var that = this;
@@ -18,6 +17,7 @@ var Chrono = {
 		});
 
 		ps.subscribe(constants.MESSAGE.QUESTION_START, function () {
+			that.reset(that.duration);
 			that.timer.start();
 		});
 	},
