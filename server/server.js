@@ -39,6 +39,11 @@ app.use(express.static(__dirname + "/../"));
 
 ps.subscribe(ioAdapter.EVENT_READY, function () {
 
+	ps.subscribe('PING', function (data) {
+		console.log('fom : ' + data.from);
+		ps.publish('PING_BACK', {to:data.from});
+	});
+
 	ps.subscribe(constants.MESSAGE.GAME_START, function () {
 		DB.getQuestion(function (rows) {
 			ps.publish(constants.MESSAGE.QUESTION_START, {question: rows[0].content, answers: [rows[0].res1, rows[0].res2, rows[0].res3, rows[0].res4]});
