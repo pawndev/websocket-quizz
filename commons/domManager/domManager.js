@@ -6,6 +6,7 @@ define(['../utils'], function (utils) {
         this.alive = true;
 
         this._cssClassCache = node.className.split(' ');
+        this._cssClassBlueprint = node.className;
     }
 
     // reference to "native" dom object
@@ -17,8 +18,10 @@ define(['../utils'], function (utils) {
     // virtual node should be destroyed ?
     DomNode.prototype.alive = false;
 
-
     DomNode.prototype._cssClassCache = [];
+    DomNode.prototype._cssClassBlueprint = "";
+
+    DomNode.prototype._eventListeners = [];
 
     DomNode.prototype._addInstructions = function (type, payload) {
 
@@ -42,8 +45,9 @@ define(['../utils'], function (utils) {
     DomNode.prototype.refreshDom = function () {
 
         var newClassName = this._cssClassCache.join(' ').trim();
-        if (newClassName !== this._node.className) {
+        if (newClassName !== this._cssClassBlueprint) {
             this.prop('className', newClassName);
+            this._cssClassBlueprint = newClassName;
         }
 
         this._instructions.forEach(function (instruction, id) {
@@ -66,7 +70,13 @@ define(['../utils'], function (utils) {
         this._instructions = [];
     };
 
-    DomNode.prototype.destroy = function () {
+    DomNode.prototype.destroy = function (keepListener) {
+        if (!keepListener) {
+            this._eventListeners.forEach(function (listenerConf) {
+                this.off(listenerConf.event, listenerConf.callback);
+            }, this);            
+        }
+
         this.alive = false;
     };
 
@@ -104,11 +114,14 @@ define(['../utils'], function (utils) {
     };
 
     DomNode.prototype.on = function (event, callback) {
+        this._eventListeners.push({eventName: event, callback: callback});
         this._addInstructions('eventAdd', {eventName: event, callback: callback});
+        return this;
     };
 
     DomNode.prototype.off = function (event, callback) {
         this._addInstructions('eventRemove', {eventName: event, callback: callback});
+        return this;
     };
 
     DomNode.prototype.html = function (html) {
@@ -131,12 +144,16 @@ define(['../utils'], function (utils) {
     DomNode.prototype.addClass = function (value) {
         if (!this.hasClass(value))
             this._cssClassCache.push(value);
+
+        return this;
     };
 
     DomNode.prototype.removeClass = function (value) {
         var indexOf = this._cssClassCache.indexOf(value);
         if (indexOf !== -1)
             this._cssClassCache.splice(indexOf, 1);
+
+        return this;
     };
 
     DomNode.prototype.toggleClass = function (value) {
@@ -144,12 +161,20 @@ define(['../utils'], function (utils) {
             this.addClass(value);
         else 
             this.removeClass(value);
+
+        return this;
     };
 
     DomNode.prototype.hasClass = function (value) {
         return this._cssClassCache.indexOf(value) !== -1 ? true : false;
     };
-    
+
+    DomNode.prototype.after = function (delay, callback) {
+        utils.after(delay * 1000, utils.bind(callback, this))
+
+        return this;
+    };
+
     var domManagerNodes = [],
         KNOWN_INSTRUCTIONS = ['prop', 'attr', 'class', 'eventAdd', 'eventRemove']
         ;
