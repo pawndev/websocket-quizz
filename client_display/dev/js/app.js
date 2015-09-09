@@ -13,6 +13,19 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
         domQuestion = dm.query('.question');
         domAnswers = dm.queryAll('.answers');
 
+        var domMessage;
+
+        pubsub.subscribe(constants.MESSAGE.PLAYER_REGISTERED, function (data) {
+            if (domBody.hasClass('wait')) {
+                dm.query('.wait .message-box').html(data.nickname + ' is in da house!')
+                                              .removeClass('fadeOut')
+                                              .after(2, function () {
+                                                  this.addClass('fadeOut');
+                                              });
+
+            }
+        });
+
         listenerId = pubsub.subscribe(constants.MESSAGE.QUESTION_START, displayGameLayout);
 
         /*domButtons = dm.queryAll('button');*/

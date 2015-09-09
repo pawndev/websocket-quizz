@@ -1,43 +1,76 @@
 require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commons/constants', '../../../commons/domManager/domManager', '../../../commons/pubsub/pubsub'], function (domReady, io, constants, dm, ps) {
 
     var domBody,
-        listenerId;
+        domButtons, domStartButton, domNickname, domReadyBtn, domMessage,
+        listenerId,
+        myNickname;
 
     io.setPort(8000);
     io.setServerUrl(document.location.hostname);
     ps.setNetworkAdapter(io);
 
     domReady(function () {
-        var domButtons;
 
         dm.run();
 
         domBody = dm.query('body');
-
         domStartButton = dm.query('.start');
-
+        domNickname = dm.query('input[name=nickname]');
+        domReadyBtn = dm.query('.ready')
         domButtons = dm.queryAll('.answer');
-        domButtons.forEach(function (btn) {
-            btn.on('click', onClickButton);
-        });
+        domMessage = dm.query('.message');
 
         domBody.addClass('wait');
+
+        domButtons.forEach(function (btn) {
+            btn.on('click', clickAnswerButton);
+        });
+
+        domStartButton.on('click', register);
+
+        domReadyBtn.on('click', startGame);
 
         ps.subscribe(io.EVENT_READY, function () {
             console.log('connected to server');
 
-            domStartButton.on('click', function () {
-                pubsub.publish(constants.MESSAGE.GAME_START, {});
-            });
-            domStartButton.toggleClass('hidden');
-
-            listenerId = pubsub.subscribe(constants.MESSAGE.QUESTION_START, displayGameLayout);
+            domBody.addClass('connected');
+            domBody.removeClass('wait');
         });
 
         console.log('init');
     });
 
-    function onClickButton(event) {
+    function register () {
+        var lid = pubsub.subscribe(constants.MESSAGE.INVALID_NICKNAME, function () {
+            domBody.addClass('connected');
+            domBody.removeClass('wait');
+            domMessage.html('Invalid nickname')
+                      .after(2, function () {
+                        this.html('');
+                        domNickname.prop('value', '');
+                      });
+        });
+        listenerId = pubsub.subscribe(constants.MESSAGE.PLAYER_REGISTERED, function (data) {
+            if (data.nickname === myNickname) {
+                pubsub.unsubscribe(constants.MESSAGE.INVALID_NICKNAME, lid);
+                displayBePrepared();
+            }
+        });
+        
+        domBody.removeClass('connected');
+        domBody.addClass('wait');
+        myNickname = domNickname.prop('value');
+        pubsub.publish(constants.MESSAGE.NEW_PLAYER, { nickname: myNickname });
+    }
+
+    function startGame () {
+        listenerId = pubsub.subscribe(constants.MESSAGE.QUESTION_START, displayGameLayout);
+        domBody.removeClass('be-prepared');
+        domBody.addClass('wait');
+        pubsub.publish(constants.MESSAGE.GAME_START, {});
+    }
+
+    function clickAnswerButton(event) {
         var payload = { response: dm.query(this).data('r') };        
         pubsub.publish('ANSWER_SENT', payload);
         domBody.removeClass('game-layout');
@@ -45,7 +78,17 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
         domBody.addClass('wait');
     }
 
-    function displayGameLayout(param) {
+    function displayBePrepared () {
+        if (listenerId !== null) {
+            pubsub.unsubscribe(constants.MESSAGE.PLAYER_REGISTERED, listenerId);
+            domBody.removeClass('wait');
+        } else {
+            domBody.removeClass('result-layout');
+        }
+        domBody.addClass('be-prepared');
+    }
+
+    function displayGameLayout (param) {
         pubsub.unsubscribe(constants.MESSAGE.QUESTION_START, listenerId);
         domBody.removeClass('wait');
         domBody.addClass('game-layout');
@@ -66,6 +109,11 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
 
         domBody.removeClass('end-layout');
         domBody.addClass('result-layout');
+
+        setTimeout(function () {
+            listenerId = null;
+            displayBePrepared();
+        }, 5000);
     }
 
     window.pubsub = ps;
