@@ -51,14 +51,14 @@ ps.subscribe(ioAdapter.EVENT_READY, function () {
 		ps.publish('PING_BACK', {to:data.from});
 	});
 
-	ps.subscribe(constants.MESSAGE.NEW_PLAYER, function (data) {
+	/*ps.subscribe(constants.MESSAGE.NEW_PLAYER, function (data) {
 		if (players.indexOf(data.nickname) === -1) {
 			players.push(data.nickname);
 			ps.publish(constants.MESSAGE.PLAYER_REGISTERED, data);
 		} else {
 			ps.publish(constants.MESSAGE.INVALID_NICKNAME, {to:data.from});
 		}
-	});
+	});*/
 
 	ps.subscribe(constants.MESSAGE.GAME_START, function () {
 		count++;
@@ -77,10 +77,12 @@ ps.subscribe(ioAdapter.EVENT_READY, function () {
 
 	ps.subscribe(constants.MESSAGE.ANSWER_SENT, function (res) {
 		var ourTime = Chrono.getTime();
-		DB.addResponse(1, curQuestion, ourTime.toString(), res.response, "player", function () {
+		DB.addResponse(1, curQuestion, ourTime.toString(), res.response, "player", function (ok) {
 			console.log('try to insert in bdd for');
 			console.log(ourTime);
 		});
+		//COnfirmation à Mathias #1
+		ps.publish(constants.MESSAGE.ADD_SCORE, {player: res.player, id_question: res.question, response: ok});
 	});
 
 	ps.subscribe(constants.MESSAGE.TIMER_END, function () {
