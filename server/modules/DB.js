@@ -20,9 +20,6 @@ var DB = {
 		SQLquery += " AND id_question NOT IN (" + notIn + ")";
 		this.connection.query(SQLquery, function (err, rows) {
 			if (err) throw err;
-			console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!BOULOU!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-			console.info(this.sql);
-			console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!BOULOU!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 			that.allQuestion.push(rows[0].id_question);
 			callback.call(this, rows);
 		});
@@ -60,7 +57,7 @@ var DB = {
 				score: parseInt(score)
 			};
 			that.connection.query("INSERT INTO session SET ?", data, function (err, result) {
-				if (err) console.log(this.sql);
+				if (err) throw err;
 				callback(that);
 			});
 			//callback.call(this, questionRes);

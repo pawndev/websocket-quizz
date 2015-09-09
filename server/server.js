@@ -14,6 +14,7 @@ var curQuestion;
 var Chrono = require('./modules/Chrono');
 var path = require('path');
 var route = require('./../route')(app);
+var player = [];
 DB.init();
 
 // DB.getQuestion(function (raws) {
@@ -38,10 +39,18 @@ app.use(express.static(__dirname + "/../"));
 
 
 ps.subscribe(ioAdapter.EVENT_READY, function () {
-
 	ps.subscribe('PING', function (data) {
 		console.log('fom : ' + data.from);
 		ps.publish('PING_BACK', {to:data.from});
+	});
+
+	ps.subscribe(constants.MESSAGE.NEW_PLAYER, function (data) {
+		if (players.indexOf(data.nickname) === -1) {
+			players.push(data.nickname);
+			ps.publish(constants.MESSAGE.PLAYER_REGISTERED, data);
+		} else {
+			//ps.publish(constants.MESSAGE.INVALID_NICKNAME, {})
+		}
 	});
 
 	ps.subscribe(constants.MESSAGE.GAME_START, function () {
@@ -56,7 +65,7 @@ ps.subscribe(ioAdapter.EVENT_READY, function () {
 	ps.subscribe(constants.MESSAGE.ANSWER_SENT, function (res) {
 		var ourTime = Chrono.getTime();
 		DB.addResponse(1, curQuestion, ourTime.toString(), res.response, "player", function () {
-			console.log('try to insert in bdd');
+			console.log('try to insert in bdd for');
 			console.log(ourTime);
 		});
 	});
