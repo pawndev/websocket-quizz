@@ -14,7 +14,7 @@ var curQuestion;
 var Chrono = require('./modules/Chrono');
 var path = require('path');
 var route = require('./../route')(app);
-var player = [];
+var players = [];
 DB.init();
 
 // DB.getQuestion(function (raws) {
@@ -49,7 +49,7 @@ ps.subscribe(ioAdapter.EVENT_READY, function () {
 			players.push(data.nickname);
 			ps.publish(constants.MESSAGE.PLAYER_REGISTERED, data);
 		} else {
-			//ps.publish(constants.MESSAGE.INVALID_NICKNAME, {})
+			ps.publish(constants.MESSAGE.INVALID_NICKNAME, {to:data.from});
 		}
 	});
 
