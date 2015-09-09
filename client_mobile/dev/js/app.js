@@ -1,22 +1,24 @@
 require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commons/constants', '../../../commons/domManager/domManager', '../../../commons/pubsub/pubsub'], function (domReady, io, constants, dm, ps) {
 
     var domBody,
-        listenerId;
+        domButtons, domStartButton, domNickname, domReadyBtn, domMessage,
+        listenerId,
+        myNickname;
 
     io.setPort(8000);
     io.setServerUrl(document.location.hostname);
     ps.setNetworkAdapter(io);
 
     domReady(function () {
-        var domButtons, domStartButton, domNickname, domReadyBtn;
 
         dm.run();
 
         domBody = dm.query('body');
         domStartButton = dm.query('.start');
         domNickname = dm.query('input[name=nickname]');
-        domReadyBtn = dm.query('.reday')
+        domReadyBtn = dm.query('.ready')
         domButtons = dm.queryAll('.answer');
+        domMessage = dm.query('.message');
 
         domBody.addClass('wait');
 
@@ -39,13 +41,31 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
     });
 
     function register () {
-        listenerId = pubsub.subscribe(constants.MESSAGE.PLAYER_REGISTERED, displayBePrepared);
+        var lid = pubsub.subscribe(constants.MESSAGE.INVALID_NICKNAME, function () {
+            domBody.addClass('connected');
+            domBody.removeClass('wait');
+            domMessage.html('Invalid nickname')
+                      .after(2, function () {
+                        this.html('');
+                        domNickname.prop('value', '');
+                      });
+        });
+        listenerId = pubsub.subscribe(constants.MESSAGE.PLAYER_REGISTERED, function (data) {
+            if (data.nickname === myNickname) {
+                pubsub.unsubscribe(constants.MESSAGE.INVALID_NICKNAME, lid);
+                displayBePrepared();
+            }
+        });
+        
+        domBody.removeClass('connected');
         domBody.addClass('wait');
-        pubsub.publish(constants.MESSAGE.NEW_PLAYER, { nickname: domNickname.prop('value') });
-    });
+        myNickname = domNickname.prop('value');
+        pubsub.publish(constants.MESSAGE.NEW_PLAYER, { nickname: myNickname });
+    }
 
     function startGame () {
         listenerId = pubsub.subscribe(constants.MESSAGE.QUESTION_START, displayGameLayout);
+        domBody.removeClass('be-prepared');
         domBody.addClass('wait');
         pubsub.publish(constants.MESSAGE.GAME_START, {});
     }
@@ -61,9 +81,9 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
     function displayBePrepared () {
         if (listenerId !== null) {
             pubsub.unsubscribe(constants.MESSAGE.PLAYER_REGISTERED, listenerId);
-            domBody.removeClass('result-layout');
-        } else {
             domBody.removeClass('wait');
+        } else {
+            domBody.removeClass('result-layout');
         }
         domBody.addClass('be-prepared');
     }
