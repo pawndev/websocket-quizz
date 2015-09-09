@@ -4,13 +4,37 @@
     var listenersAutoIncrement = 0;
     var netInterface = null;
 
-    function addNetworkListener(netInterface) {
+    function addNetworkListener(net) {
         var type;
-        netInterface.on('message', function (payload) {
-            type = payload.type;
-            delete payload.type;
-            pubsub.publish(type, payload, true);
-        });
+        function connectionCallback (clientSocket) {
+            pubsub.publish('CONNECT', {}, true);
+
+            if (clientSocket !== undefined) {
+                socket = clientSocket;
+            } else {
+                socket = net;
+            }
+            socket.on('message', function (payload) {
+                type = payload.type;
+                delete payload.type;
+
+                if (typeof socket.id !== undefined) {
+                    payload.from = socket.id;
+                }
+
+                pubsub.publish(type, payload, true);
+            });
+            if (typeof module === 'object' && module && typeof module.exports !== undefined) {
+                netInterface = net;
+            } else {
+                netInterface = socket;
+            }
+        }
+        if (typeof module === 'object' && module && typeof module.exports !== undefined) {
+            net.on('connection', connectionCallback);
+        } else {
+            net.on('connect', connectionCallback);
+        }
     }
 
     function removeNetworkListener(netInterface) {
@@ -21,25 +45,29 @@
         publish: function (message, payload, noNetForwarding) {
             var listener;
 
-            // nobody is listening
-            if (listeners[message] === null) {
-                return;
+            if (message === undefined || payload === undefined) {
+                throw new Error('missing message or payload');
             }
 
-            for (var listenerIndex in listeners[message]) {
-                if (listeners[message].hasOwnProperty(listenerIndex)) {
-                    listener = listeners[message][listenerIndex];
-                    if (Array.isArray(listener)) {
-                        listener[0].call(listener[1], payload);
-                    } else {
-                        listener.call(this, payload);
+            if (netInterface !== null && noNetForwarding !== true) {
+                payload.type = message;
+                console.log('emit', payload);
+                netInterface.emit('message', payload);
+            }
+
+            // nobody is listening
+            if (listeners[message] !== null) {
+                for (var listenerIndex in listeners[message]) {
+                    if (listeners[message].hasOwnProperty(listenerIndex)) {
+                        listener = listeners[message][listenerIndex];
+                        if (Array.isArray(listener)) {
+                            listener[0].call(listener[1], payload);
+                        } else {
+                            listener.call(this, payload);
+                        }
                     }
-                    if (netInterface !== null && noNetForwarding !== true) {
-                        payload.type = message;
-                        netInterface.emit('message', payload);
-                    }
-                }
-            };
+                };                
+            }
         },
         subscribe: function (message, callback) {
             listenersAutoIncrement++;
@@ -66,6 +94,15 @@
             if (stillHasListeners === false) {
                 delete listeners[message];
             }
+        },
+        setNetworkAdapter: function (networkAdapter) {
+            if (netInterface !== null) {
+                removeNetworkListener(netInterface);
+            }
+
+            networkAdapter.setup(this, function (net) {
+                netInterface = net
+            });
         },
         setNetworkInterface: function (networkInterface) {
             if (netInterface !== null) {

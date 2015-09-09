@@ -7,13 +7,14 @@
 
     <div class="screen wait">
         <h1>WAIT</h1>
+        <button class="start hidden">Start</button>
     </div>
 
     <div class="screen game-layout">
-        <button>A</button>
-        <button>B</button>
-        <button>C</button>
-        <button>D</button>
+        <button class="answer" data-r="1">A</button>
+        <button class="answer" data-r="2">B</button>
+        <button class="answer" data-r="3">C</button>
+        <button class="answer" data-r="4">D</button>
     </div>
 
     <div class="screen confirm-layout">
@@ -28,12 +29,11 @@
         Wow you did it well!
     </div>
 
-
 	<!-- dev files -->
     <script src="../dev/js/conf.js"></script>
     <script data-main="app" src="../../bower_components/requirejs/require.js"></script>
 
     <!-- prod files -->
-    <!-- <script src="js/prod/app.js"></script> -->
+    <!-- <script src="app.js"></script> -->
 </body>
 </html>

@@ -2,6 +2,7 @@ var mysql = require('mysql');
 var fs = require('fs');
 
 var DB = {
+	allQuestion: [],
 	init: function () {
 		var myCo;
 		var data = fs.readFileSync(__dirname + '/../database.json');
@@ -9,7 +10,18 @@ var DB = {
 		myCo.connect();
 		this.connection = myCo;
 	},
-	getQuestion: function (id_question, callback) {
+	getQuestion: function (callback) {
+		var that = this;
+		var SQLquery = "SELECT id_question, content, res1, res2, res3, res4 FROM question WHERE 1 = 1";
+		for (var i = 0; i < this.allQuestion.length; i++) {
+			SQLquery += " AND id_question != " . this.allQuestion[i];
+		}
+		that.connection.query(SQLquery, function (err, rows) {
+			if (err) throw err;
+			callback.call(this, rows);
+		});
+	},
+	getQuestions: function (id_question, callback) {
 		if (typeof id_question === "function") {
 			callback = id_question;
 			id_question = null;
@@ -19,6 +31,7 @@ var DB = {
 		this.connection.query(SQLquery, function (err, rows) {
 			if (err) throw err;
 			callback.call(this, rows);
+			return rows;
 		});
 	},
 	setStartTime: function () {
@@ -34,14 +47,14 @@ var DB = {
 			var correctRes = questionRes[0]['res' + questionRes[0].goodRes];
 			var data = {
 				id_session: session,
-				id_question: id_question,
+				id_question: parseInt(id_question),
 				time: time,
-				resSent: response,
+				resSent: parseInt(response),
 				user: user,
-				score: score
+				score: parseInt(score)
 			};
 			that.connection.query("INSERT INTO session SET ?", data, function (err, result) {
-				if (err) throw err;
+				if (err) console.log(this.sql);
 				callback(that);
 			});
 			//callback.call(this, questionRes);
@@ -65,7 +78,7 @@ var DB = {
 		if (typeof user === 'function') {
 			callback = user;
 			user = null;
-			var SQLquery = "SELECT user, id_question, resSent FROM session";
+			var SQLquery = "SELECT user, id_question, resSent, score FROM session";
 			SQLquery += user !== null ? " WHERE user LIKE '%" + user + "%'" : "";
 			this.connection.query(SQLquery, function (err, rows) {
 				if (err) throw err;
@@ -78,6 +91,13 @@ var DB = {
 				});
 			});
 		}
+	},
+	getScore: function (user, callback) {
+		if (typeof user === "function") {
+			callback = user;
+			user = null;
+		}
+		var SQLquery = "SELECT user, score FROM session ";
 	}
 };
 

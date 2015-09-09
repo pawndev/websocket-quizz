@@ -1,7 +1,10 @@
-require(['domReady', 'socketio', '../../../commons/constants', '../../../commons/domManager/domManager', '../../../commons/pubsub/pubsub'], function (domReady, io, constants, dm, pubsub) {
+require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commons/constants', '../../../commons/domManager/domManager', '../../../commons/pubsub/pubsub'], function (domReady, io, constants, dm, pubsub) {
 
     var domBody,
         listenerId;
+
+    io.setPort(8000);
+    pubsub.setNetworkAdapter(io);
 
     domReady(function () {
         dm.run();
@@ -40,6 +43,10 @@ require(['domReady', 'socketio', '../../../commons/constants', '../../../commons
 
     function displayResult (result) {
         pubsub.unsubscribe(constants.MESSAGE.RESULT_SENT, listenerId);
+        var domScreen = dm.query('.screen.result-layout');
+
+        domScreen.html(JSON.stringify(result));
+
         domBody.removeClass('end-layout');
         domBody.addClass('result-layout');
     }
