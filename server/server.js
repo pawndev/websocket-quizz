@@ -80,9 +80,9 @@ ps.subscribe(ioAdapter.EVENT_READY, function () {
 		DB.addResponse(1, curQuestion, ourTime.toString(), res.response, "player", function (ok) {
 			console.log('try to insert in bdd for');
 			console.log(ourTime);
+			ps.publish(constants.MESSAGE.ADD_SCORE, {player: res.player, id_question: res.question, response: ok});
 		});
 		//COnfirmation à Mathias #1
-		ps.publish(constants.MESSAGE.ADD_SCORE, {player: res.player, id_question: res.question, response: ok});
 	});
 
 	ps.subscribe(constants.MESSAGE.TIMER_END, function () {
