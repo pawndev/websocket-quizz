@@ -37,3 +37,75 @@ body {
 .hidden {
     display: none;
 }
+@blue: #69A7B1;
+@white: #FFF;
+@size1: 3.9em;
+@size2: 2em;
+@width: 100%;
+@align: center;
+@smartphone-portrait: ~"only screen and (max-device-width: 640px) and (orientation: portrait)";
+@smartphone-landscape: ~"screen and (max-device-width: 640px) and (orientation: landscape)";
+@tablet-portrait: ~"(max-device-width: 800px) and (orientation: portrait)";
+@tablet-landscape: ~"(max-device-width: 1280px) and (orientation: landscape)";
+
+p, h2 {
+    @media @smartphone-portrait, @tablet-portrait, @smartphone-landscape, @tablet-landscape  {
+        width: @width;
+        color: @blue;
+        background-color: @white;
+        text-align: @align;
+    }
+}
+p {
+    @media @smartphone-portrait, @tablet-portrait, @smartphone-landscape, @tablet-landscape  {
+        font-size: @size1;
+    }
+}
+h2 {
+    @media @smartphone-portrait, @tablet-portrait, @smartphone-landscape, @tablet-landscape  {
+        font-size: @size2;
+    }
+}
+img {
+    @media @smartphone-portrait, @tablet-portrait, @smartphone-landscape, @tablet-landscape {
+        display: block;
+        margin-left: auto;
+        margin-right: auto
+    }
+}
+.background(@top, @light, @dark) {
+    background: -webkit-linear-gradient(@top, @light, @dark);
+    background: -moz-linear-gradient(@top, @light, @dark);
+    background: -ms-linear-gradient(@top, @light, @dark);       
+    background: -o-linear-gradient(@top, @light, @dark);
+}
+.border-radius(@radius) {
+  -moz-border-radius: @radius;
+  -webkit-border-radius: @radius;
+  border-radius: @radius;
+
+}
+.box-shadow(@rgba, @h, @v, @d) {
+  -moz-box-shadow: @rgba @h @v @d;
+  -webkit-box-shadow: @rgba @h @v @d;
+  box-shadow: @rgba @h @v @d;
+
+}
+button {
+    @media @smartphone-portrait, @tablet-portrait, @smartphone-landscape {
+        border-top: 1px solid #3794a2;
+        padding: 20px 40px;
+        color: @white;
+        font-size: @size2;
+        background: #1A262D;
+        font-family: Georgia, serif;
+        text-decoration: none;
+        vertical-align: middle;
+        margin-bottom: 5%;
+        background: -webkit-gradient(linear, left top, left bottom, from(#3794a2), to(#1A262D));
+        .background(top, #3794a2, #1A262D);
+        .border-radius(20px);
+        .box-shadow(rgba(0, 0, 0, 1), 0, 1px, 0);
+        width: @width;
+    }
+}
