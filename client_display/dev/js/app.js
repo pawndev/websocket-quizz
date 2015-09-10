@@ -56,12 +56,19 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
 
     function displayResult (result) {
         pubsub.unsubscribe(constants.MESSAGE.RESULT_SENT, listenerId);
-        var domScreen = dm.query('.screen.result-layout');
+        var domScreen = dm.query('.screen.result-layout'), lid;
 
         domScreen.html(JSON.stringify(result));
 
         domBody.removeClass('end-layout');
         domBody.addClass('result-layout');
+
+        listenerId = pubsub.subscribe(constants.MESSAGE.QUESTION_START, displayGameLayout);
+        lid = pubsub.subscribe(constants.MESSAGE.GAME_END, function () {
+            pubsub.unsbbscribe(constants.MESSAGE.GAME_END, lid);
+
+            // display final score
+        });
     }
 
     window.pubsub = pubsub;
