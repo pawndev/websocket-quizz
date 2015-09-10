@@ -79,13 +79,15 @@ ps.subscribe(ioAdapter.EVENT_READY, function () {
 		res.nickname = res.nickname || "Chris";
 		DB.addResponse(1, res.question, ourTime.toString(), res.response, res.nickname, function (ok, goodRes) {
 			ps.publish(constants.MESSAGE.ADD_SCORE, {player: res.nickname, id_question: res.question, response: ok, goodRes: goodRes});
-		});
-	});
-
-	ps.subscribe(constants.MESSAGE.TIMER_END, function () {
-		console.log('TIMER_END');
-		DB.getGivenResponses(function (rows) {
-			ps.publish(constants.MESSAGE.RESULT_SENT, {rows: rows});
+		});//																					^
+	});//																						|
+//																								|
+	ps.subscribe(constants.MESSAGE.TIMER_END, function () {//									|
+		console.log('TIMER_END');//																|
+		DB.getGivenResponses(function (rows) {//												|
+			//Modifié le result sent en add score pour renvoyer un "semblant" de comme la haut -|
+			ps.publish(constants.MESSAGE.ADD_SCORE, {id_question: curQuestion, goodRes: goodRes});
+			//ps.publish(constants.MESSAGE.RESULT_SENT, {rows: rows});
 		});
 	});
 });
