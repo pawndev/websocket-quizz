@@ -69,15 +69,16 @@ ps.subscribe(ioAdapter.EVENT_READY, function () {
 			console.log('Voila le resultat de fin : ');
 			console.info(game.scores);
 			//définir un event de fin de jeu
+			ps.publish(constants.MESSAGE.RESULT_SENT, game.scores);
 		}
 	});
 
 	ps.subscribe(constants.MESSAGE.ANSWER_SENT, function (res) {
 		var ourTime = Chrono.getTime();
-		res.player = res.player || "player";
 		res.question = res.question || curQuestion;
-		DB.addResponse(1, res.question, ourTime.toString(), res.response, res.player, function (ok) {
-			ps.publish(constants.MESSAGE.ADD_SCORE, {player: res.player, id_question: res.question, response: ok});
+		res.nickname = res.nickname || "Chris";
+		DB.addResponse(1, res.question, ourTime.toString(), res.response, res.nickname, function (ok, goodRes) {
+			ps.publish(constants.MESSAGE.ADD_SCORE, {player: res.nickname, id_question: res.question, response: ok, goodRes: goodRes});
 		});
 	});
 

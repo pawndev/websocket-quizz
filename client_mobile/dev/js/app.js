@@ -67,11 +67,11 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
         listenerId = pubsub.subscribe(constants.MESSAGE.QUESTION_START, displayGameLayout);
         domBody.removeClass('be-prepared');
         domBody.addClass('wait');
-        pubsub.publish(constants.MESSAGE.GAME_START, {});
+        pubsub.publish(constants.MESSAGE.PLAYER_READY, {});
     }
 
     function clickAnswerButton(event) {
-        var payload = { response: dm.query(this).data('r') };        
+        var payload = { response: dm.query(this).data('r'), nickname: myNickname };        
         pubsub.publish('ANSWER_SENT', payload);
         domBody.removeClass('game-layout');
         domStartButton.addClass('hidden');
