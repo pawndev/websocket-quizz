@@ -10,7 +10,8 @@
             QUESTION_START: 'QUESTION_START',
             ANSWER_SENT: 'ANSWER_SENT', 
             TIMER_END: 'TIMER_END',
-            RESULT_SENT: 'RESULT_SENT'
+            RESULT_SENT: 'RESULT_SENT',
+            GAME_END: 'GAME_END'
         }
     }
 
