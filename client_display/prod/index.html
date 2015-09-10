@@ -1,28 +1,43 @@
 <!doctype html>
 <html>
 <head>
+    <meta charset="utf-8"/>
     <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+    <div class="content">
+      <h1><img src="img/logo.png" alt="logo"></h1>
+      <div class="screen wait">
+            
+        <p>Wait ...</p>
+      </div>
+      <div class="screen game-layout">
+          <div class="question">Pourquoi boulloulu est boulouuu?</div>
+          <div class="block">
+              <div class="answers" data-num="1"><span>A.</span>bouluo</div>
+              <div class="answers" data-num="2"><span>B.</span>balala</div>
+              <div class="answers" data-num="3"><span>C.</span>bilili</div>
+              <div class="answers" data-num="4"><span>D.</span>bululu</div>
+          </div>
+          <div class="clear"></div>
+      </div>
 
-    <div class="screen wait">
-        <h1>WAIT</h1>
-    </div>
+      <div class="screen result-layout">
+        <p>La bonne réponse est : <span class="final-answer">Bululu</span></p>
+        <p>D</p>
+        <div class="wl">
+          <div class="winner">
+            <h2>Winner</h2>
+            <span>Nom du gars</span> t'es trop fort !!!
+          </div>
 
-    <div class="screen game-layout">
-        <div class="question"></div>
-        <div class="answers" data-num="1"></div>
-        <div class="answers" data-num="2"></div>
-        <div class="answers" data-num="3"></div>
-        <div class="answers" data-num="4"></div>
-    </div>
-
-    <div class="screen end-layout">
-        End of the game !
-    </div>
-
-    <div class="screen result-layout">
-        Wow you did it well!
+          <div class="looser">
+            <h2>Looser</h2>
+            <span>Nom du gars</span> t'es trop nul !!!
+          </div>
+          <div class="clear"></div>
+        </div>
+      </div>
     </div>
 
 

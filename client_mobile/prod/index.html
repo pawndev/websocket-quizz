@@ -1,32 +1,43 @@
 <!doctype html>
 <html>
 <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
     <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
     <div class="screen wait">
-        <h1>WAIT</h1>
+        <h1><img src="img/logo.png" alt="logo"></h1>
+        <p>Wait ...</p>
         <button class="start hidden">Start</button>
     </div>
 
     <div class="screen game-layout">
-        <button class="answer" data-r="1">A</button>
-        <button class="answer" data-r="2">B</button>
-        <button class="answer" data-r="3">C</button>
-        <button class="answer" data-r="4">D</button>
+        <h1><img class="logo" src="img/logo.png" alt="logo"></h1>
+        <h2>Question n°<span class="number">1</span></h2>
+        <div class="block">
+            <button class="answer" data-r="1">A</button>
+            <button class="answer" data-r="2">B</button>
+            <button class="answer" data-r="3">C</button>
+            <button class="answer" data-r="4">D</button>
+        </div>
     </div>
 
     <div class="screen confirm-layout">
-        Youre answer has been registered !
+        <h1><img src="img/V.png" alt="Validation" class="validation"></h1>
+        <p class="valid">Your answer has been registered !<p>
     </div>
 
     <div class="screen end-layout">
-        End of the game !
+    <h1><img class="logo" src="img/logo.png" alt="logo"></h1>
+        <p class="valid">End of the game !</p>
     </div>
 
     <div class="screen result-layout">
-        Wow you did it well!
+    <h1><img class="logo" src="img/logo.png" alt="logo"></h1>
+        <p class="valid">Wow you did it well!</p>
+        <img src="img/pouce.png" alt="Up" class="pouce">
     </div>
 
 	<!-- dev files -->
