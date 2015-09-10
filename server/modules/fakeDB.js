@@ -18,6 +18,9 @@ var DB = {
 	},
 	getGivenResponses: function (callback) {
 		callback({});
+	},
+	getQuestionNumber: function (callback) {
+		callback(1)
 	}
 };
 
