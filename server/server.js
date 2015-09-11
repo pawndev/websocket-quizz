@@ -20,7 +20,7 @@ var count = 0;
 var questionNumber = 0;
 DB.init();
 
-Chrono.init(ps, 5000);
+Chrono.init(ps, 10000);
 
 var game = new PlayerManager(ps);
 
@@ -72,13 +72,14 @@ ps.subscribe(ioAdapter.EVENT_READY, function () {
 		}
 	});
 
-	ps.subscribe(constants.MESSAGE.ANSWER_SENT, function (res) {
+	ps.pong(constants.MESSAGE.ANSWER_SENT, function (res) {
 		var ourTime = Chrono.getTime();
 		res.question = res.question || curQuestion;
 		res.nickname = res.nickname || "Chris";
 		DB.addResponse(1, res.question, ourTime.toString(), res.response, res.nickname, function (ok, goodRes) {
 			ps.publish(constants.MESSAGE.ADD_SCORE, {player: res.nickname, id_question: res.question, response: ok, goodRes: goodRes});
-		});//																					^
+		});
+		return {};//																					^
 	});//																						|
 //																								|
 	ps.subscribe(constants.MESSAGE.TIMER_END, function () {//									|

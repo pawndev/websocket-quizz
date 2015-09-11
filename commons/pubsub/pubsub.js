@@ -64,8 +64,8 @@
         },
         pong: function (message, onPing) {
             var that = this;
-            this.subscribe(message, function () {
-                var payload = onPing();
+            this.subscribe(message, function (data) {
+                var payload = onPing(data);
                 this.publish('PONG_' + message, payload);
             });
         },

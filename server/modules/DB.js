@@ -104,8 +104,12 @@ var DB = {
 	},
 	getQuestionNumber: function (callback) {
 		var that = this;
-		this.connection.query('SELECT content FROM question', function (err, rows) {
-			callback.call(that, rows.length);
+		this.connection.query('SELECT count(content) AS nbQuestion FROM question', function (err, rows) {
+			if (err) {
+				console.log(err);
+			} else {
+				callback.call(that, rows[0].nbQuestion);
+			}
 		});
 	}
 };

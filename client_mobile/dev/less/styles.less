@@ -13,6 +13,14 @@ body {
 
     &.connected .connected {
         display: block;
+
+        .form {
+            text-align: center;
+
+            button {
+                margin-top: 20px;
+            }
+        }
     }
 
     &.be-prepared .be-prepared {
@@ -40,50 +48,45 @@ body {
 .hidden {
     display: none;
 }
+
 @blue: #69A7B1;
 @white: #FFF;
 @size2: 2em;
-@width: 100%;
+@width: 90%;
 @align: center;
 @smartphone-portrait: ~"only screen and (device-width: 320px) and (device-height: 640px) and (orientation: portrait)";
 @smartphone-landscape: ~"screen and (device-width: 320px) and (device-height: 640px) and (orientation: landscape)";
 @tablet-portrait: ~"(max-device-width: 800px) and (orientation: portrait)";
 @tablet-landscape: ~"(max-device-width: 1280px) and (orientation: landscape)";
 
+input {
+    height: 50px;
+    font-size: 30px;
+    text-align: center;    
+}
+
 html {
     background: #DCF6FF none repeat scroll 0% 0%;
 }
 p, h2 {
-    @media @smartphone-portrait, @tablet-portrait, @smartphone-landscape, @tablet-landscape  {
-        width: @width;
-        color: @blue;
-        background-color: @white;
-        text-align: @align;
-    }
+    color: @blue;
+    background-color: @white;
+    text-align: @align;
 }
 p, .valid {
-    @media @smartphone-portrait, @tablet-portrait, @smartphone-landscape, @tablet-landscape  {
-        font-size: @size2;
-    }
+    font-size: @size2;
 }
 h2 {
-    @media @smartphone-portrait, @tablet-portrait, @smartphone-landscape, @tablet-landscape  {
-        font-size: @size2;
-    }
+    font-size: @size2;
 }
 img {
-    @media @smartphone-portrait, @tablet-portrait, @smartphone-landscape, @tablet-landscape {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        width: @width;
-
-    }
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: @width;
 }
 .logo {
-    @media @smartphone-portrait, @smartphone-landscape, @tablet-landscape, @tablet-portrait {
-        width: 25%;
-    }
+    width: 25%;
 }
 
 .background(@top, @light, @dark) {
@@ -105,31 +108,47 @@ img {
 
 }
 button {
-    @media @smartphone-portrait, @tablet-portrait, @smartphone-landscape {
-        border-top: 1px solid #3794a2;
-        padding: 20px 40px;
-        color: @white;
-        font-size: @size2;
-        background: #1A262D;
-        font-family: Georgia, serif;
-        text-decoration: none;
-        vertical-align: middle;
-        margin-bottom: 5%;
-        background: -webkit-gradient(linear, left top, left bottom, from(#3794a2), to(#1A262D));
-        .background(top, #3794a2, #1A262D);
-        .border-radius(20px);
-        .box-shadow(rgba(0, 0, 0, 1), 0, 1px, 0);
-        width: @width;
-    }
+    border-top: 1px solid #3794a2;
+    padding: 20px 40px;
+    color: @white;
+    font-size: @size2;
+    background: #1A262D;
+    font-family: Georgia, serif;
+    text-decoration: none;
+    vertical-align: middle;
+    margin-top: 5%;
+    margin-left: 5%;
+    background: -webkit-gradient(linear, left top, left bottom, from(#3794a2), to(#1A262D));
+    .background(top, #3794a2, #1A262D);
+    .border-radius(20px);
+    .box-shadow(rgba(0, 0, 0, 1), 0, 1px, 0);
+    width: @width;
 }
 .block, .validation {
-    @media @tablet-portrait, @smartphone-landscape, @tablet-landscape, @smartphone-portrait {
-        width: @width;
+    display: block;
+}
+
+.screen.result-layout {
+
+    &>div {
+        display: none;
+    }
+
+    &.yeah .yeah {
         display: block;
     }
-}
-.pouce {
-    @media @smartphone-landscape, @tablet-landscape {
-        width: 20%;
+
+    &.booh .booh {
+        display: block;
     }
+
+    .pouce {
+        width: 60%;
+
+        &.down {
+            transform: rotate(180deg);
+        }
+    }
+
 }
+

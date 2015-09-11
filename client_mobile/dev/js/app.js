@@ -1,7 +1,7 @@
 require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commons/constants', '../../../commons/domManager/domManager', '../../../commons/pubsub/pubsub'], function (domReady, io, constants, dm, ps) {
 
     var domBody,
-        domButtons, domStartButton, domNickname, domReadyBtn, domMessage, domWaitMessage,
+        domButtons, domStartButton, domNickname, domReadyBtn, domMessage, domWaitMessage, domResultScreen,
         listenerId,
         myNickname;
 
@@ -21,11 +21,9 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
         domMessage = dm.query('.message');
         domWaitMessage = dm.query('.wait-message');
 
-        domStartButton = dm.query('.start');
-        domNickname = dm.query('input[name=nickname]');
-        domReadyBtn = dm.query('.ready')
-        domButtons = dm.queryAll('.answer');
         domMessage = dm.query('.message');
+
+        domResultScreen = dm.query('.screen.result-layout');
 
         domBody.addClass('wait');
 
@@ -79,10 +77,10 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
 
     function clickAnswerButton(event) {
         var payload = { response: dm.query(this).data('r'), nickname: myNickname };        
-        pubsub.publish('ANSWER_SENT', payload);
-        domBody.removeClass('game-layout');
-        domStartButton.addClass('hidden');
-        domBody.addClass('wait');
+        pubsub.ping('ANSWER_SENT', payload, function () {
+            domBody.removeClass('game-layout');
+            domBody.addClass('confirm-layout');
+        });
     }
 
     function displayBePrepared () {
@@ -105,22 +103,27 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
     function endTimer() {
         pubsub.unsubscribe(constants.MESSAGE.TIMER_END, listenerId);
         domBody.removeClass('game-layout');
-        domBody.removeClass('wait');
+        domBody.removeClass('confirm-layout');
 
         domBody.addClass('end-layout');
         listenerId = pubsub.subscribe(constants.MESSAGE.RESULT_SENT, displayResult);
     }
 
-    function displayResult (result) {
+    function displayResult (data) {
         pubsub.unsubscribe(constants.MESSAGE.RESULT_SENT, listenerId);
+
+        var cls = data.details.results[myNickname] ? 'yeah' : 'booh';
+
+        domResultScreen.addClass(cls);
 
         domBody.removeClass('end-layout');
         domBody.addClass('result-layout');
 
         setTimeout(function () {
-            domBody.removeClass('result-layout');
-            startGame();
-        }, 5000);
+            domResultScreen.removeClass(cls);
+            listenerId = null;
+            displayBePrepared();
+        }, 10000);
     }
 
     window.pubsub = ps;

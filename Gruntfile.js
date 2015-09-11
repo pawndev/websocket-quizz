@@ -82,7 +82,7 @@ module.exports = function (grunt) {
         },
         watch: {
             scripts: {
-                files: ['client_mobile/dev/**/*.*'/*, 'client_display/dev/** /*.*'*/],
+                files: ['client_mobile/dev/**/*.*', 'client_display/dev/**/*.*'],
                 tasks: ['build'],
             },
         }

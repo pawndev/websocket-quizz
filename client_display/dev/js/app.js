@@ -1,7 +1,10 @@
 require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commons/constants', '../../../commons/domManager/domManager', '../../../commons/pubsub/pubsub'], function (domReady, io, constants, dm, pubsub) {
 
     var domBody,
-        listenerId;
+        listenerId,
+        domQuestion,
+        domMessage,
+        domWaitMessage;
 
     io.setPort(8000);
     pubsub.setNetworkAdapter(io);
@@ -12,16 +15,20 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
         domBody = dm.query('body');
         domQuestion = dm.query('.question');
         domAnswers = dm.queryAll('.answers');
+        domMessage = dm.query('.wait .message-box');
+        domWaitMessage = dm.query('.wait p:first-child');
 
         var domMessage;
 
         pubsub.subscribe(constants.MESSAGE.PLAYER_REGISTERED, function (data) {
             if (domBody.hasClass('wait')) {
-                dm.query('.wait .message-box').html(data.nickname + ' is in da house!')
-                                              .removeClass('fadeOut')
-                                              .after(2, function () {
-                                                  this.addClass('fadeOut');
-                                              });
+                domWaitMessage.addClass('hidden');
+                domMessage.html(data.nickname + ' is in da house!')
+                          .removeClass('fadeOut')
+                          .after(2, function () {
+                              domWaitMessage.removeClass('hidden');
+                              this.addClass('fadeOut');
+                          });
 
             }
         });
