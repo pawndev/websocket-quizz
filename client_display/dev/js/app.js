@@ -29,14 +29,21 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
         listenerId = pubsub.subscribe(constants.MESSAGE.QUESTION_START, displayGameLayout);
 
         /*domButtons = dm.queryAll('button');*/
-
+        if (domBody.hasClass('result-layout')) {
+            domBody.removeClass('result-layout');
+        }
         domBody.addClass('wait');
         console.log('init');
     });
 
     function displayGameLayout(param) {
-        pubsub.unsubscribe(constants.MESSAGE.QUESTION_START, listenerId);
-        domBody.removeClass('wait');
+        //pubsub.unsubscribe(constants.MESSAGE.QUESTION_START, listenerId);
+        if (domBody.hasClass('wait')) {
+            domBody.removeClass('wait');
+        }
+        if (domBody.hasClass('result-layout')) {
+            domBody.removeClass('result-layout');
+        }
         domBody.addClass('game-layout');
         domQuestion.html(param.question);
 
@@ -61,6 +68,12 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
         domScreen.html(JSON.stringify(result));
 
         domBody.removeClass('end-layout');
+
+        /*domQuestion.html(result.question);
+        domAnswers.forEach(function (domAnswer) {
+            domAnswer.html(result.answers)
+        });*/
+
         domBody.addClass('result-layout');
     }
 

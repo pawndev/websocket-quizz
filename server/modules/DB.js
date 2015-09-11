@@ -13,7 +13,7 @@ var DB = {
 	getQuestion: function (callback) {
 		var that = this;
 		var notIn = "0";
-		var SQLquery = "SELECT id_question, content, res1, res2, res3, res4 FROM question WHERE 1 = 1";
+		var SQLquery = "SELECT id_question, content, res1, res2, res3, res4, goodRes FROM question WHERE 1 = 1";
 		for (var i = 0; i < this.allQuestion.length; i++) {
 			notIn += ", " + this.allQuestion[i];
 		}

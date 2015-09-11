@@ -28,15 +28,13 @@ var PlayerManager = function (pubsub) {
 
 		// {player: 'player', id_question: 1, response: 0 || 1};
 		this.ps.subscribe(constants.MESSAGE.ADD_SCORE, function (data) {
-			if (data.response === 1) {
-				data.response = true;
-			} else {
-				data.response = false;
+			if (data.response) {
+				if (data.response === 1) {
+					data.response = true;
+				} else {
+					data.response = false;
+				}
 			}
-			console.log('new response : ' + data.response);
-			console.log(that.players.indexOf(data.player) !== -1);
-			console.log(that.players.indexOf(data.player));
-			console.log(data.player);
 			if (that.players.indexOf(data.player) !== -1) {
 				console.log('je passe ce if de *****');
 				if (!that.total[data.player]) {
@@ -64,12 +62,8 @@ var PlayerManager = function (pubsub) {
 						data.goodRes = "D";
 						break;
 				}
-				that.ps.publish(constants.MESSAGE.RESULT_SENT, {goodRes: data.goodRes, details: that.scores[that.scores.length - 1], score: that.total});
 			}
-			console.log('players : ');
-			console.log(that.players);
-			console.log('scores : ');
-			console.log(JSON.stringify({goodRes: data.goodRes, details: that.scores[that.scores.length - 1], score: that.total}));
+			that.ps.publish(constants.MESSAGE.RESULT_SENT, {goodRes: data.goodRes, details: that.scores[that.scores.length - 1], score: that.total});
 		});
 	};
 };

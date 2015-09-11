@@ -15,14 +15,12 @@ var Chrono = require('./modules/Chrono');
 var path = require('path');
 var PlayerManager = require('./playerManager');
 var route = require('./../route')(app);
-var players = [];
+var goodRes;
 var count = 0;
 var questionNumber = 0;
 DB.init();
 
 Chrono.init(ps, 5000);
-
-app.use(express.static(__dirname + "/../"));
 
 var game = new PlayerManager(ps);
 
@@ -59,6 +57,7 @@ ps.subscribe(ioAdapter.EVENT_READY, function () {
 		count++;
 		if (count <= questionNumber) {
 			DB.getQuestion(function (rows) {
+				goodRes = rows[0].goodRes;
 				ps.publish(constants.MESSAGE.QUESTION_START, {question: rows[0].content, answers: [rows[0].res1, rows[0].res2, rows[0].res3, rows[0].res4]});
 				curQuestion = rows[0].id_question;
 				//Chrono.reset(Chrono.duration);

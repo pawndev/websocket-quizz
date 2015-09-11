@@ -2,7 +2,7 @@
 /*global require */
 
 var require = {
-    baseUrl: "../dev/js/",
+    baseUrl: "dev/js/",
     paths: {
         "domReady": '../../../bower_components/domReady/domReady',
         "socketio": '../../../node_modules/socket.io/node_modules/socket.io-client/socket.io'
