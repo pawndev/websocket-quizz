@@ -29,7 +29,7 @@ USE `quizz-ws`;
 --
 
 CREATE TABLE IF NOT EXISTS `question` (
-`id_quedtion` int(11) NOT NULL,
+`id_question` int(11) NOT NULL,
   `content` varchar(255) NOT NULL,
   `res1` varchar(255) NOT NULL,
   `res2` varchar(255) NOT NULL,
