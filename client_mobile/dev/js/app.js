@@ -1,7 +1,7 @@
 require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commons/constants', '../../../commons/domManager/domManager', '../../../commons/pubsub/pubsub'], function (domReady, io, constants, dm, ps) {
 
     var domBody,
-        domButtons, domStartButton, domNickname, domReadyBtn, domMessage,
+        domButtons, domStartButton, domNickname, domReadyBtn, domMessage, domWaitMessage,
         listenerId,
         myNickname;
 
@@ -14,6 +14,13 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
         dm.run();
 
         domBody = dm.query('body');
+        domStartButton = dm.query('.start');
+        domNickname = dm.query('input[name=nickname]');
+        domReadyBtn = dm.query('.ready')
+        domButtons = dm.queryAll('.answer');
+        domMessage = dm.query('.message');
+        domWaitMessage = dm.query('.wait-message');
+
         domStartButton = dm.query('.start');
         domNickname = dm.query('input[name=nickname]');
         domReadyBtn = dm.query('.ready')
@@ -111,8 +118,8 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
         domBody.addClass('result-layout');
 
         setTimeout(function () {
-            listenerId = null;
-            displayBePrepared();
+            domBody.removeClass('result-layout');
+            startGame();
         }, 5000);
     }
 
