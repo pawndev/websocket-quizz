@@ -4,7 +4,8 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
         listenerId,
         domQuestion,
         domMessage,
-        domWaitMessage;
+        domWaitMessage,
+        questionData = {};
 
     io.setPort(8000);
     pubsub.setNetworkAdapter(io);
@@ -17,6 +18,11 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
         domAnswers = dm.queryAll('.answers');
         domMessage = dm.query('.wait .message-box');
         domWaitMessage = dm.query('.wait p:first-child');
+        domAnswerText = dm.query('.final-answer');
+        domAnswerLetter = dm.query('.final-answer-letter');
+        domFinalQuestion = dm.query('.result-layout .question');
+
+        domRanking = dm.query('.wl');        
 
         var domMessage;
 
@@ -36,27 +42,35 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
         listenerId = pubsub.subscribe(constants.MESSAGE.QUESTION_START, displayGameLayout);
 
         /*domButtons = dm.queryAll('button');*/
-        if (domBody.hasClass('result-layout')) {
-            domBody.removeClass('result-layout');
-        }
+        // if (domBody.hasClass('result-layout')) {
+        //     domBody.removeClass('result-layout');
+        // }
         domBody.addClass('wait');
         console.log('init');
     });
 
     function displayGameLayout(param) {
-        //pubsub.unsubscribe(constants.MESSAGE.QUESTION_START, listenerId);
-        if (domBody.hasClass('wait')) {
-            domBody.removeClass('wait');
-        }
-        if (domBody.hasClass('result-layout')) {
-            domBody.removeClass('result-layout');
-        }
-        domBody.addClass('game-layout');
-        domQuestion.html(param.question);
+        pubsub.unsubscribe(constants.MESSAGE.QUESTION_START, listenerId);
+        
+        domBody.removeClass('wait');        
+        domBody.addClass('be-prepared');
 
-        domAnswers.forEach(function (domAnswer) {
-            domAnswer.html(param.answers[domAnswer.data('num') - 1]);
-        });
+        setTimeout(function () {
+            domBody.removeClass('be-prepared');
+
+            domBody.addClass('game-layout');
+            domQuestion.html(param.question);
+
+            questionData.text = param.question;
+            questionData.answers = [];
+
+            domAnswers.forEach(function (domAnswer) {
+                var ansText = param.answers[domAnswer.data('num') - 1];
+                domAnswer.html(ansText);
+                questionData.answers.push(ansText);
+            });
+
+        }, 1000);
 
         listenerId = pubsub.subscribe(constants.MESSAGE.TIMER_END, endTimer);
     }
@@ -70,23 +84,29 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
 
     function displayResult (result) {
         pubsub.unsubscribe(constants.MESSAGE.RESULT_SENT, listenerId);
-        var domScreen = dm.query('.screen.result-layout'), lid;
-
-        domScreen.html(JSON.stringify(result));
+        var lid, tmpScore, rankingHtml = "";
 
         domBody.removeClass('end-layout');
 
-        /*domQuestion.html(result.question);
-        domAnswers.forEach(function (domAnswer) {
-            domAnswer.html(result.answers)
-        });*/
+        domFinalQuestion.html(questionData.text);
+        domAnswerText.html(questionData.answers[questionData.goodRes - 1]);
+        domAnswerLetter.html(("ABCD")[questionData.goodRes - 1]);
+
+        // result.details.scores.forEach(function (player, idx) {
+        //     rankingHtml += '<div class="row""><div class="rank">' + idx + 1 + '</div><div class="login">' + player.nickname + '</div>' + player.score + '<div class="score"></div></div><div class="clear"></div>'
+        // });
+        domRanking.html(rankingHtml)
 
         domBody.addClass('result-layout');
 
-        listenerId = pubsub.subscribe(constants.MESSAGE.QUESTION_START, displayGameLayout);
+        listenerId = pubsub.subscribe(constants.MESSAGE.QUESTION_START, function (param) {
+            domBody.removeClass('result-layout');
+            displayGameLayout(param);
+        });
         lid = pubsub.subscribe(constants.MESSAGE.GAME_END, function () {
             pubsub.unsbbscribe(constants.MESSAGE.GAME_END, lid);
 
+            console.log('GAME OVER');
             // display final score
         });
     }
