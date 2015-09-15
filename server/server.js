@@ -68,7 +68,8 @@ ps.subscribe(ioAdapter.EVENT_READY, function () {
 			console.log('Voila le resultat de fin : ');
 			console.info(game.scores);
 			//définir un event de fin de jeu
-			ps.publish(constants.MESSAGE.RESULT_SENT, game.scores);
+			ps.publish(constants.MESSAGE.GAME_END, game.scores);
+			//ps.publish(constants.MESSAGE.RESULT_SENT, game.scores);
 		}
 	});
 
@@ -79,15 +80,14 @@ ps.subscribe(ioAdapter.EVENT_READY, function () {
 		DB.addResponse(1, res.question, ourTime.toString(), res.response, res.nickname, function (ok, goodRes) {
 			ps.publish(constants.MESSAGE.ADD_SCORE, {player: res.nickname, id_question: res.question, response: ok, goodRes: goodRes});
 		});
-		return {};//																					^
-	});//																						|
-//																								|
-	ps.subscribe(constants.MESSAGE.TIMER_END, function () {//									|
-		console.log('TIMER_END');//																|
-		DB.getGivenResponses(function (rows) {//												|
-			//Modifié le result sent en add score pour renvoyer un "semblant" de comme la haut -|
-			ps.publish(constants.MESSAGE.ADD_SCORE, {id_question: curQuestion, goodRes: goodRes});
-			//ps.publish(constants.MESSAGE.RESULT_SENT, {rows: rows});
+		return {};
+	});
+
+	ps.subscribe(constants.MESSAGE.TIMER_END, function () {
+		console.log('TIMER_END');
+		DB.getGivenResponses(function (rows) {
+			//ps.publish(constants.MESSAGE.ADD_SCORE, {id_question: curQuestion, goodRes: goodRes});
+			ps.publish(constants.MESSAGE.RESULT_SENT, {goodRes: goodRes, details: game.scores[game.scores.length - 1], score: game.sorted()});
 		});
 	});
 });

@@ -7,6 +7,21 @@ var PlayerManager = function (pubsub) {
 	this.scores = []; // [{question: 1, results: {p1: true, p2: false}}];
 	this.total = {};
 	this.ready = 0;
+	this.sorted = function () {
+		var sortedScores = [];
+		var scoreKey = Object.keys(this.total);
+		for (var i = 0; i < scoreKey.length; i++) {
+			sortedScores.push({name: scoreKey[i], score: this.total[scoreKey[i]]});
+		}
+		sortedScores.sort(function (a, b) {
+			if (a.score > b.Score)
+				return 1;
+			if (a.score < b.score)
+				return -1
+			return 0;
+		});
+		return sortedScores;
+	};
 	this.run = function () {
 		var that = this;
 		this.ps.subscribe(constants.MESSAGE.NEW_PLAYER, function (data) {
@@ -63,7 +78,9 @@ var PlayerManager = function (pubsub) {
 						break;
 				}
 			}
-			that.ps.publish(constants.MESSAGE.RESULT_SENT, {goodRes: data.goodRes, details: that.scores[that.scores.length - 1], score: that.total});
+			//sort with Object.keys
+
+			that.ps.publish(constants.MESSAGE.RESULT_SENT, {goodRes: data.goodRes, details: that.scores[that.scores.length - 1], score: that.sorted()});
 		});
 	};
 };

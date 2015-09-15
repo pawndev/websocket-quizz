@@ -85,7 +85,7 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
 
         listenerId = pubsub.subscribe(constants.MESSAGE.QUESTION_START, displayGameLayout);
         lid = pubsub.subscribe(constants.MESSAGE.GAME_END, function () {
-            pubsub.unsbbscribe(constants.MESSAGE.GAME_END, lid);
+            pubsub.unsbscribe(constants.MESSAGE.GAME_END, lid);
 
             // display final score
         });
