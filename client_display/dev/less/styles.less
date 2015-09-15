@@ -6,6 +6,16 @@ body {
         display: none;
     }
 
+    .wait, .be-prepared {
+        width: 100%;
+
+        p {
+            position: absolute;
+            left: 0;            
+            top: 40%;
+        }        
+    }
+
     &.wait .wait {
         display: block;
         position:absolute;
@@ -115,16 +125,31 @@ img {
     padding: 3%;
     width: 100%;
 }
-span:not(.final-answer)
+.game-layout span
 {
     text-align: left;
     display: block;
 }
-.result-layout p:nth-child(2)
+.result-layout
 {
-    font-size: 12em;
-    background-color: transparent;
-    margin:0;
+
+    p:first-child {
+        background-color: transparent;
+        text-transform: uppercase;
+        color: #1A262D;
+        font-family: sans-serif;
+    }
+
+    p.question {
+        background-color: transparent;
+        margin:0;
+        line-height: inherit;        
+    }
+
+    p.question-solution {
+        maring-top: 20px;
+    }
+
 }
 .wl
 {
@@ -134,6 +159,7 @@ span:not(.final-answer)
     background-color: #FFF;
     text-align: center;
     margin: auto;
+    padding: 5%;
 }
 .looser, .winner
 {
