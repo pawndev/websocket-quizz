@@ -14,13 +14,13 @@ var DB = {
 	},
 	addResponse: function (session, id_question, time, response, user, callback) {
 		console.log("saving : \nsession : " + session + "\nid_question : " + id_question + "\ntime : " + time + "\nresponse : " + response + "\nuser : " + user);
-		callback();
+		callback(1);
 	},
 	getGivenResponses: function (callback) {
 		callback({});
 	},
-	getQuestionNumber: function (callback) {
-		callback(1)
+	getQuestionCount: function (callback) {
+		callback(1);
 	}
 };
 

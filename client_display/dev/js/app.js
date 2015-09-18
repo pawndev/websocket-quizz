@@ -2,10 +2,12 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
 
     var domBody,
         listenerId,
+        gameOverLid,
         domQuestion,
         domMessage,
         domWaitMessage,
-        questionData = {};
+        questionData = {},
+        isGameOver = false;
 
     io.setPort(8000);
     pubsub.setNetworkAdapter(io);
@@ -80,10 +82,14 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
         pubsub.unsubscribe(constants.MESSAGE.TIMER_END, listenerId);
         domBody.removeClass('game-layout');
         domBody.addClass('end-layout');
+        gameOverLid = pubsub.subscribe(constants.MESSAGE.GAME_END, gameOver);
         listenerId = pubsub.subscribe(constants.MESSAGE.RESULT_SENT, displayResult);
     }
 
     function displayResult (result) {
+
+        console.log(result);
+
         pubsub.unsubscribe(constants.MESSAGE.RESULT_SENT, listenerId);
         var lid, tmpScore, rankingHtml = "";
 
@@ -93,32 +99,49 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
         domAnswerText.html(questionData.answers[result.goodRes - 1]);
         domAnswerLetter.html(("ABCD")[result.goodRes - 1]);
 
+        rankingHtml = "";
         result.score.forEach(function (player, idx) {
-            rankingHtml += '<div class="row""><div class="rank">#' + (idx + 1) + '</div> - <div class="login">' + player.name + '</div><div class="score">' + player.score + 'pt(s)</div></div><div class="clear"></div>'
+            rankingHtml += '<div class="row""><div class="rank">#' + (idx + 1) + '&nbsp;-&nbsp;</div><div class="login">' + player.player + '</div><div class="score">' + player.score + 'pt(s)</div></div><div class="clear"></div>'
         });
         domRankingResult.html(rankingHtml)
 
         domBody.addClass('result-layout');
 
-        listenerId = pubsub.subscribe(constants.MESSAGE.QUESTION_START, function (param) {
-            domBody.removeClass('result-layout');
-            displayGameLayout(param);
+        if (!isGameOver) {
+            listenerId = pubsub.subscribe(constants.MESSAGE.QUESTION_START, function (param) {
+                pubsub.unsubscribe(constants.MESSAGE.GAME_END, gameOverLid);
+
+                domBody.removeClass('result-layout');
+                displayGameLayout(param);
+            });            
+        } else {
+            setTimeout(function () {
+                domBody.removeClass('result-layout');
+                domBody.addClass('game-over');
+            }, 1000);
+        }
+
+    }
+
+    function gameOver(data) {
+        pubsub.unsubscribe(constants.MESSAGE.GAME_END, gameOverLid);
+        pubsub.unsubscribe(constants.MESSAGE.QUESTION_START, listenerId);
+
+        console.log('GAME OVER');
+        // display final score
+
+        console.log(data.ranking);
+
+        rankingHtml = "";
+        data.ranking.forEach(function (player, idx) {
+            rankingHtml += '<div class="row""><div class="rank">#' + (idx + 1) + '&nbsp;-&nbsp;</div><div class="login">' + player.player + '</div><div class="score">' + player.score + 'pt(s)</div></div><div class="clear"></div>'
         });
-        lid = pubsub.subscribe(constants.MESSAGE.GAME_END, function (data) {
-            pubsub.unsubscribe(constants.MESSAGE.GAME_END, lid);
 
-            console.log('GAME OVER');
-            // display final score
+        console.log(rankingHtml);
 
-            domBody.removeClass('result-layout');
-            domBody.addClass('game-over');
+        domRankingOver.html(rankingHtml)
 
-            data.ranking.forEach(function (player, idx) {
-                rankingHtml += '<div class="row""><div class="rank">#' + (idx + 1) + '</div> - <div class="login">' + player.name + '</div><div class="score">' + player.score + 'pt(s)</div></div><div class="clear"></div>'
-            });
-            domRankingOver.html(rankingHtml)
-
-        });
+        isGameOver = true;
     }
 
     window.pubsub = pubsub;

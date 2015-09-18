@@ -3,7 +3,9 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
     var domBody,
         domButtons, domStartButton, domNickname, domReadyBtn, domMessage, domWaitMessage, domResultScreen,
         listenerId,
-        myNickname;
+        gameOverLid,
+        myNickname,
+        isGameOver = false;
 
     io.setPort(8000);
     io.setServerUrl(document.location.hostname);
@@ -33,7 +35,7 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
 
         domStartButton.on('click', register);
 
-        domReadyBtn.on('click', startGame);
+        domReadyBtn.on('click', startQuestion);
 
         ps.subscribe(io.EVENT_READY, function () {
             console.log('connected to server');
@@ -68,8 +70,9 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
         pubsub.publish(constants.MESSAGE.NEW_PLAYER, { nickname: myNickname });
     }
 
-    function startGame () {
+    function startQuestion () {
         listenerId = pubsub.subscribe(constants.MESSAGE.QUESTION_START, displayGameLayout);
+        pubsub.unsubscribe(constants.MESSAGE.GAME_END, gameOverLid);
         domBody.removeClass('be-prepared');
         domBody.addClass('wait');
         pubsub.publish(constants.MESSAGE.PLAYER_READY, {});
@@ -106,13 +109,14 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
         domBody.removeClass('confirm-layout');
 
         domBody.addClass('end-layout');
+        gameOverLid = pubsub.subscribe(constants.MESSAGE.GAME_END, gameOver);
         listenerId = pubsub.subscribe(constants.MESSAGE.RESULT_SENT, displayResult);
     }
 
     function displayResult (data) {
         pubsub.unsubscribe(constants.MESSAGE.RESULT_SENT, listenerId);
 
-        var cls = data.details.results[myNickname] ? 'yeah' : 'booh';
+        var cls = data.details[myNickname] ? 'yeah' : 'booh';
 
         domResultScreen.addClass(cls);
 
@@ -121,9 +125,23 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
 
         setTimeout(function () {
             domResultScreen.removeClass(cls);
-            listenerId = null;
-            displayBePrepared();
+
+            if (isGameOver) {
+                endTimer();
+            } else {
+                pubsub.unsubscribe(constants.MESSAGE.GAME_END, gameOverLid);
+                listenerId = null;
+
+                displayBePrepared();                
+            }
         }, 10000);
+    }
+
+    function gameOver () {
+        pubsub.unsubscribe(constants.MESSAGE.GAME_END, gameOverLid);
+        pubsub.unsubscribe(constants.MESSAGE.QUESTION_START, listenerId);
+
+        isGameOver = true;
     }
 
     window.pubsub = ps;

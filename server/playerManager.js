@@ -1,31 +1,55 @@
 var constants = require('../commons/constants');
-var DB = require('./modules/DB');
 
-var PlayerManager = function (pubsub) {
+var PlayerManager = function (pubsub, disableAutoRun) {
 	this.ps = pubsub;
 	this.players = []; // ['nickname1', 'nickname2']
 	this.scores = []; // [{player: 'string nickname', score: 1}, {player: 'string nickname2', score: 3}];
 	this.ready = 0;
-	this.sorted = function () {
-		var sortedScores = [];
-		var scoreKey = Object.keys(this.total);
-		for (var i = 0; i < scoreKey.length; i++) {
-			sortedScores.push({name: scoreKey[i], score: this.total[scoreKey[i]]});
-		}
-		sortedScores.sort(function (a, b) {
-			if (a.score > b.Score)
+	this.resetScores = function() {
+		this.scores = [];
+		this.players.forEach(function (player) {
+			this.scores.push({'player': player, score: 0});
+		}, this);
+	};
+	this.getSortedScores = function () {
+		this.scores.sort(function (a, b) {
+			if (a.score > b.score)
 				return 1;
 			if (a.score < b.score)
 				return -1
 			return 0;
 		});
-		return sortedScores;
+
+		this.players = [];
+		this.scores.forEach(function (score) {
+			this.players.push(score.player);
+		}, this);
+
+		return this.scores;
+	};
+	this.exists = function (nickname, returnIdx) {
+		var idx = this.players.indexOf(nickname);
+		return returnIdx ? idx : (idx !== -1);
+	};
+	this.addPlayer = function (nickname) {
+		if (!this.exists(nickname)) {
+			this.players.push(nickname);
+			return true			
+		} else {
+			return false;
+		}
+	}
+	this.addScore = function (player, scoreInc) {
+		var plIdx = this.exists(player, true);
+
+		if (plIdx !== -1) {
+			this.scores[plIdx].score += scoreInc;
+		}
 	};
 	this.run = function () {
-		var that = this;
-		this.ps.subscribe(constants.MESSAGE.NEW_PLAYER, function (data) {
-			if (that.players.indexOf(data.nickname) === -1) {
-				that.players.push(data.nickname);
+		var that = this, lid;
+		lid = this.ps.subscribe(constants.MESSAGE.NEW_PLAYER, function (data) {
+			if (that.addPlayer(data.nickname)) {
 				that.ps.publish(constants.MESSAGE.PLAYER_REGISTERED, data);
 			} else {
 				that.ps.publish(constants.MESSAGE.INVALID_NICKNAME, {to:data.from});
@@ -35,64 +59,23 @@ var PlayerManager = function (pubsub) {
 		this.ps.subscribe(constants.MESSAGE.PLAYER_READY, function () {
 			that.ready++;
 			if (that.ready === that.players.length) {
+				that.ps.unsubscribe(constants.MESSAGE.NEW_PLAYER, lid);
 				that.ready = 0;
 
-				// reset scores
-				that.scores = [];
-				that.players.forEach(function (player) {
-					that.scores.push({'player': player, score: 0});
+				that.resetScores();
+
+				// {player: 'player', scoreIncrement: 1};
+				that.ps.subscribe(constants.MESSAGE.ADD_SCORE, function (data) {
+					that.addScore(data.player, data.scoreIncrement);
 				});
 
 				that.ps.publish(constants.MESSAGE.GAME_START, {});
 			}
 		});
-
-		// {player: 'player', scoreIncrement: 1};
-		this.ps.subscribe(constants.MESSAGE.ADD_SCORE, function (data) {
-/*			if (data.response) {
-				if (data.response === 1) {
-					data.response = true;
-				} else {
-					data.response = false;
-				}
-			}*/
-  			if (that.players.indexOf(data.player) !== -1) {
-  				var i = 0;
-  				while(that.scores[i].player !== data.player) {
-  					i++;
-  				}
-  				that.scores[i].score += data.scoreIncrement;
-/*				console.log('je passe ce if de *****');
-				if (!that.total[data.player]) {
-					that.total[data.player] = 0;
-				}
-				data.response === true ? that.total[data.player]++ : that.total[data.player] += 0;
-				if (!that.scores[data.id_question - 1]) {
-					that.scores[data.id_question - 1] = {};
-					that.scores[data.id_question - 1].question = data.id_question;
-					that.scores[data.id_question - 1].results = {};
-				}
-
-				that.scores[data.id_question - 1].results[data.player] = data.response;
-				switch (data.goodRes) {
-					case 1:
-						data.goodRes = "A";
-						break;
-					case 2:
-						data.goodRes = "B";
-						break;
-					case 3:
-						data.goodRes = "C";
-						break;
-					case 4:
-						data.goodRes = "D";
-						break;
-				}*/
-			}
-			
-			that.ps.publish(constants.MESSAGE.RESULT_SENT, {goodRes: data.goodRes, details: that.scores[that.scores.length - 1], score: that.sorted()});
-		});
 	};
+	if (!disableAutoRun) {
+		this.run();
+	}
 };
 
 module.exports = PlayerManager;
