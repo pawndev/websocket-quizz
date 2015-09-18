@@ -21,7 +21,7 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
         domAnswerText = dm.query('.final-answer');
         domAnswerLetter = dm.query('.final-answer-letter');
         domFinalQuestion = dm.query('.result-layout .question');
-
+        
         domRanking = dm.query('.wl');        
 
         var domMessage;
@@ -87,11 +87,12 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
         var lid, tmpScore, rankingHtml = "";
 
         domBody.removeClass('end-layout');
-
+        console.log('result : ');
+        console.log(result);
         domFinalQuestion.html(questionData.text);
         domAnswerText.html(questionData.answers[questionData.goodRes - 1]);
-        domAnswerLetter.html(("ABCD")[questionData.goodRes - 1]);
-
+        domAnswerLetter.html(("ABCD")[result.goodRes - 1]);
+        domAnswerText.html(result.goodResText);
         // result.details.scores.forEach(function (player, idx) {
         //     rankingHtml += '<div class="row""><div class="rank">' + idx + 1 + '</div><div class="login">' + player.nickname + '</div>' + player.score + '<div class="score"></div></div><div class="clear"></div>'
         // });

@@ -11,6 +11,7 @@ var Chrono = require('./modules/Chrono');
 var PlayerManager = require('./playerManager');
 var route = require('./../route')(app);
 var goodRes;
+var goodResText;
 var count = 0;
 var questionNumber = 0;
 DB.init();
@@ -38,6 +39,7 @@ ps.subscribe(ioAdapter.EVENT_READY, function () {
 		if (count <= questionNumber) {
 			DB.getQuestion(function (rows) {
 				goodRes = rows[0].goodRes;
+				goodResText = rows[0]["res" + goodRes];
 				ps.publish(constants.MESSAGE.QUESTION_START, {question: rows[0].content, answers: [rows[0].res1, rows[0].res2, rows[0].res3, rows[0].res4]});
 				curQuestion = rows[0].id_question;
 			});
@@ -60,7 +62,7 @@ ps.subscribe(ioAdapter.EVENT_READY, function () {
 		console.log('TIMER_END');
 		DB.getGivenResponses(function (rows) {
 			//ps.publish(constants.MESSAGE.ADD_SCORE, {id_question: curQuestion, goodRes: goodRes});
-			ps.publish(constants.MESSAGE.RESULT_SENT, {goodRes: goodRes, details: game.scores[game.scores.length - 1], score: game.sorted()});
+			ps.publish(constants.MESSAGE.RESULT_SENT, {goodRes: goodRes, goodResText: goodResText, details: game.scores[game.scores.length - 1], score: game.sorted()});
 		});
 	});
 });
