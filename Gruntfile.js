@@ -23,8 +23,8 @@ module.exports = function (grunt) {
         less: {
             development: {
                 options: {
-                    compress: false,
-                    yuicompress: false,
+                    compress: true,
+                    yuicompress: true,
                     optimization: 2
                 },
                 files: {
