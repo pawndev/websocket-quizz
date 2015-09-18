@@ -112,7 +112,7 @@ require(['domReady', '../../../commons/pubsub/adapter.socketio', '../../../commo
     function displayResult (data) {
         pubsub.unsubscribe(constants.MESSAGE.RESULT_SENT, listenerId);
 
-        var cls = data.details.results[myNickname] ? 'yeah' : 'booh';
+        var cls = data.details.results[myNickname] ? 'yeah' : 'boooh';
 
         domResultScreen.addClass(cls);
 
