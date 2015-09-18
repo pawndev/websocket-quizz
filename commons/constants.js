@@ -7,6 +7,7 @@
             INVALID_NICKNAME: 'INVALID_NICKNAME',
             PLAYER_READY: 'PLAYER_READY',
             ADD_SCORE: 'ADD_SCORE',
+            READY_TO_GO: 'READY_TO_GO',
             GAME_START: 'GAME_START',
             QUESTION_START: 'QUESTION_START',
             ANSWER_SENT: 'ANSWER_SENT', 

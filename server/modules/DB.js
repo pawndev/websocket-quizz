@@ -102,7 +102,7 @@ var DB = {
 		}
 		var SQLquery = "SELECT user, score FROM session ";
 	},
-	getQuestionNumber: function (callback) {
+	getQuestionCount: function (callback) {
 		var that = this;
 		this.connection.query('SELECT count(content) AS nbQuestion FROM question', function (err, rows) {
 			if (err) {

@@ -11,22 +11,17 @@ var Chrono = require('./modules/Chrono');
 var PlayerManager = require('./playerManager');
 var route = require('./../route')(app);
 var goodRes;
-var count = 0;
-var questionNumber = 0;
+var questionNumber = null;
+var questionCount = 0;
 DB.init();
 
 Chrono.init(ps, 10000);
 
-var game = new PlayerManager(ps);
+var pm = new PlayerManager(ps);
 
 ps.subscribe(ioAdapter.EVENT_READY, function () {
 	
-	game.run();
-
-	DB.getQuestionNumber(function (nbr) {
-		questionNumber = nbr;
-		console.log('There are ' + nbr + ' questions');
-	});
+	pm.run();
 
 	ps.subscribe('PING', function (data) {
 		console.log('fom : ' + data.from);
@@ -34,8 +29,17 @@ ps.subscribe(ioAdapter.EVENT_READY, function () {
 	});
 
 	ps.subscribe(constants.MESSAGE.GAME_START, function () {
-		count++;
-		if (count <= questionNumber) {
+
+		if (questionNumber === null) {
+			DB.getQuestionCount(function (nbr) {
+				questionCount = nbr;
+				console.log('There are ' + nbr + ' questions');
+			});
+		} else {
+			questionNumber++;	
+		}
+		
+		if (questionNumber <= questionCount) {
 			DB.getQuestion(function (rows) {
 				goodRes = rows[0].goodRes;
 				ps.publish(constants.MESSAGE.QUESTION_START, {question: rows[0].content, answers: [rows[0].res1, rows[0].res2, rows[0].res3, rows[0].res4]});

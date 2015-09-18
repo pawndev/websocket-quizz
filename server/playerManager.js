@@ -3,9 +3,8 @@ var DB = require('./modules/DB');
 
 var PlayerManager = function (pubsub) {
 	this.ps = pubsub;
-	this.players = [];
-	this.scores = []; // [{question: 1, results: {p1: true, p2: false}}];
-	this.total = {};
+	this.players = []; // ['nickname1', 'nickname2']
+	this.scores = []; // [{player: 'string nickname', score: 1}, {player: 'string nickname2', score: 3}];
 	this.ready = 0;
 	this.sorted = function () {
 		var sortedScores = [];
@@ -37,21 +36,33 @@ var PlayerManager = function (pubsub) {
 			that.ready++;
 			if (that.ready === that.players.length) {
 				that.ready = 0;
+
+				// reset scores
+				that.scores = [];
+				that.players.forEach(function (player) {
+					that.scores.push({'player': player, score: 0});
+				});
+
 				that.ps.publish(constants.MESSAGE.GAME_START, {});
 			}
 		});
 
-		// {player: 'player', id_question: 1, response: 0 || 1};
+		// {player: 'player', scoreIncrement: 1};
 		this.ps.subscribe(constants.MESSAGE.ADD_SCORE, function (data) {
-			if (data.response) {
+/*			if (data.response) {
 				if (data.response === 1) {
 					data.response = true;
 				} else {
 					data.response = false;
 				}
-			}
-			if (that.players.indexOf(data.player) !== -1) {
-				console.log('je passe ce if de *****');
+			}*/
+  			if (that.players.indexOf(data.player) !== -1) {
+  				var i = 0;
+  				while(that.scores[i].player !== data.player) {
+  					i++;
+  				}
+  				that.scores[i].score += data.scoreIncrement;
+/*				console.log('je passe ce if de *****');
 				if (!that.total[data.player]) {
 					that.total[data.player] = 0;
 				}
@@ -76,10 +87,9 @@ var PlayerManager = function (pubsub) {
 					case 4:
 						data.goodRes = "D";
 						break;
-				}
+				}*/
 			}
-			//sort with Object.keys
-
+			
 			that.ps.publish(constants.MESSAGE.RESULT_SENT, {goodRes: data.goodRes, details: that.scores[that.scores.length - 1], score: that.sorted()});
 		});
 	};
