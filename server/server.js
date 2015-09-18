@@ -42,7 +42,7 @@ ps.subscribe(ioAdapter.EVENT_READY, function () {
 				curQuestion = rows[0].id_question;
 			});
 		} else {
-			ps.publish(constants.MESSAGE.GAME_END, game.scores);
+			ps.publish(constants.MESSAGE.GAME_END, {ranking: game.sorted()});
 		}
 	});
 
