@@ -60,8 +60,8 @@ CREATE TABLE IF NOT EXISTS `session` (
 --
 -- Index pour la table `question`
 --
-ALTER TABLE `question`
- ADD PRIMARY KEY (`id_quedtion`);
+--ALTER TABLE `question`
+-- ADD PRIMARY KEY (`id_question`);
 
 --
 -- AUTO_INCREMENT pour les tables exportées
@@ -71,7 +71,7 @@ ALTER TABLE `question`
 -- AUTO_INCREMENT pour la table `question`
 --
 ALTER TABLE `question`
-MODIFY `id_quedtion` int(11) NOT NULL AUTO_INCREMENT;
+MODIFY `id_question` int(11) NOT NULL AUTO_INCREMENT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
