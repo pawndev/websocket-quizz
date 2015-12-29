@@ -48,9 +48,10 @@ ps.subscribe(ioAdapter.EVENT_READY, function () {
 		
 		if (questionNumber <= questionCount) {
 			DB.getQuestion(function (rows) {
-				goodRes = rows[0].goodRes;
-				ps.publish(constants.MESSAGE.QUESTION_START, {question: rows[0].content, answers: [rows[0].res1, rows[0].res2, rows[0].res3, rows[0].res4]});
-				curQuestion = rows[0].id_question;
+                var n = questionNumber - 1;
+				goodRes = rows[n].goodRes;
+				ps.publish(constants.MESSAGE.QUESTION_START, {question: rows[n].content, answers: [rows[n].res1, rows[n].res2, rows[n].res3, rows[n].res4]});
+				curQuestion = rows[n].id_question;
 			});
 		}
 	});
@@ -63,9 +64,17 @@ ps.subscribe(ioAdapter.EVENT_READY, function () {
 
 			var data = {player: res.nickname};
 
-			answers[res.nickname] = !!ok;
-			data.scoreIncrement = ok;
-
+			answers[res.nickname] = goodRes == res.response ? true : false;
+            console.log('MY FUCKING SCORE : ', pm.scores);
+            if (goodRes == res.response) {
+			    pm.addScore(res.nickname, ok);
+                
+            }
+            for (var i = 0; i < pm.players.length; i++) {
+                if (pm.scores[i].player == res.nickname) {
+                    data.scoreIncrement = pm.scores[i].score;
+                }
+            }
 			ps.publish(constants.MESSAGE.ADD_SCORE, data);
 		});
 		return {};
@@ -75,6 +84,8 @@ ps.subscribe(ioAdapter.EVENT_READY, function () {
 		console.log('TIMER_END');
 		DB.getGivenResponses(function (rows) {
 			//ps.publish(constants.MESSAGE.ADD_SCORE, {id_question: curQuestion, goodRes: goodRes});
+            console.log('pm.scores : ', pm.scores);
+            console.log('pm.getSortedScores() : ', pm.getSortedScores());
 			if (questionNumber === questionCount) {
 				ps.publish(constants.MESSAGE.GAME_END, {ranking: pm.getSortedScores()});
 			}

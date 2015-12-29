@@ -34,6 +34,7 @@ var PlayerManager = function (pubsub, disableAutoRun) {
 	this.addPlayer = function (nickname) {
 		if (!this.exists(nickname)) {
 			this.players.push(nickname);
+            this.scores.push({player: nickname, score: 0});
 			return true			
 		} else {
 			return false;
@@ -43,6 +44,9 @@ var PlayerManager = function (pubsub, disableAutoRun) {
 		var plIdx = this.exists(player, true);
 
 		if (plIdx !== -1) {
+            if (this.scores[plIdx].score === null || this.scores[plIdx].score === "undefined") {
+                this.scores[plIdx].score = 0;
+            }
 			this.scores[plIdx].score += scoreInc;
 		}
 	};
@@ -65,9 +69,9 @@ var PlayerManager = function (pubsub, disableAutoRun) {
 				that.resetScores();
 
 				// {player: 'player', scoreIncrement: 1};
-				that.ps.subscribe(constants.MESSAGE.ADD_SCORE, function (data) {
-					that.addScore(data.player, data.scoreIncrement);
-				});
+				// that.ps.subscribe(constants.MESSAGE.ADD_SCORE, function (data) {
+				// 	that.addScore(data.player, data.scoreIncrement);
+				// });
 
 				that.ps.publish(constants.MESSAGE.GAME_START, {});
 			}
